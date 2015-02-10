@@ -31,9 +31,9 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
     public static final String ACTION_AWARE_LOCATIONS = "ACTION_AWARE_LOCATIONS";
     
     //holds accuracy and frequency parameters
-    private LocationRequest mLocationRequest = null;
-    private PendingIntent pIntent = null;
-    private GoogleApiClient mLocationClient = null;
+    private final static LocationRequest mLocationRequest = new LocationRequest();
+    private static PendingIntent pIntent = null;
+    private static GoogleApiClient mLocationClient = null;
     
     @Override
     public void onCreate() {
@@ -73,7 +73,6 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
             Aware.setSetting(this, Settings.ACCURACY_GOOGLE_FUSED_LOCATION, Aware.getSetting(this, Settings.ACCURACY_GOOGLE_FUSED_LOCATION));
         }
         
-        mLocationRequest = new LocationRequest();
         mLocationRequest.setPriority(Integer.parseInt(Aware.getSetting(this, Settings.ACCURACY_GOOGLE_FUSED_LOCATION)));
         mLocationRequest.setInterval(Long.parseLong(Aware.getSetting(this, Settings.FREQUENCY_GOOGLE_FUSED_LOCATION)) * 1000);
         mLocationRequest.setFastestInterval(Long.parseLong(Aware.getSetting(this, Settings.MAX_FREQUENCY_GOOGLE_FUSED_LOCATION)) * 1000);
@@ -91,21 +90,13 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API)
                     .build();
-
-            if( ! mLocationClient.isConnected() || ! mLocationClient.isConnecting() ) mLocationClient.connect();
+            mLocationClient.connect();
         }
     }
     
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
-        if( ! mLocationClient.isConnected() || ! mLocationClient.isConnecting() ) mLocationClient.connect();
-
-        if( intent != null && intent.getBooleanExtra("update", false ) ) {
-            if( ! mLocationClient.isConnected() ) mLocationClient.connect();
-            LocationServices.FusedLocationApi.removeLocationUpdates(mLocationClient, pIntent);
-
-            mLocationRequest = new LocationRequest();
+        if( mLocationClient.isConnected() ) {
             mLocationRequest.setPriority(Integer.parseInt(Aware.getSetting(this, Settings.ACCURACY_GOOGLE_FUSED_LOCATION)));
             mLocationRequest.setInterval(Long.parseLong(Aware.getSetting(this, Settings.FREQUENCY_GOOGLE_FUSED_LOCATION)) * 1000);
             mLocationRequest.setFastestInterval(Long.parseLong(Aware.getSetting(this, Settings.MAX_FREQUENCY_GOOGLE_FUSED_LOCATION)) * 1000);
@@ -117,39 +108,30 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
     @Override
     public void onDestroy() {
         super.onDestroy();
-        
+        Aware.setSetting(this, Settings.STATUS_GOOGLE_FUSED_LOCATION, false);
+
         if( mLocationClient != null ) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mLocationClient, pIntent);
         }
-        Aware.setSetting(this, Settings.STATUS_GOOGLE_FUSED_LOCATION, false);
-        
-        Intent apply = new Intent(Aware.ACTION_AWARE_REFRESH);
-        sendBroadcast(apply);
     }
     
     private boolean is_google_services_available() {
-        if ( ConnectionResult.SUCCESS == GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext()) ) {
-            return true;
-        } else {
-            return false;
-        }
+        return (ConnectionResult.SUCCESS == GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext()));
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connection_result ) {
-        if( DEBUG ) Log.e(TAG,"Error connecting to Google Fused Location services, will try again in 5 minutes");
+        if( DEBUG ) Log.w(TAG, "Error connecting to Google Fused Location services, will try again in 5 minutes");
     }
 
     @Override
     public void onConnected(Bundle arg0) {
-        mLocationRequest.setPriority(Integer.parseInt(Aware.getSetting(this, Settings.ACCURACY_GOOGLE_FUSED_LOCATION)));
-        mLocationRequest.setInterval(Long.parseLong(Aware.getSetting(this, Settings.FREQUENCY_GOOGLE_FUSED_LOCATION)) * 1000 );
-        mLocationRequest.setFastestInterval(Long.parseLong(Aware.getSetting(this, Settings.MAX_FREQUENCY_GOOGLE_FUSED_LOCATION)) * 1000);
-        LocationServices.FusedLocationApi.requestLocationUpdates(mLocationClient, mLocationRequest, pIntent);
+        Log.i(TAG,"Connected to Google's Location API");
+        Aware.startPlugin(this, getPackageName());
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-        if( DEBUG ) Log.e(TAG,"Error connecting to Google Fused Location services, will try again in 5 minutes");
+        if( DEBUG ) Log.w(TAG,"Error connecting to Google Fused Location services, will try again in 5 minutes");
     }
 }
