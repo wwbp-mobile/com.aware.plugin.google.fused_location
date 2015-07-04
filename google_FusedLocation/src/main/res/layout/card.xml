@@ -8,7 +8,8 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Current location"
-        android:id="@+id/textView" />
+        android:id="@+id/textView"
+        android:textColor="#000" />
 
     <TextView
         android:layout_width="match_parent"
@@ -16,5 +17,6 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Address"
         android:id="@+id/address"
-        android:lines="4" />
+        android:lines="4"
+        android:textColor="#000" />
 </LinearLayout>

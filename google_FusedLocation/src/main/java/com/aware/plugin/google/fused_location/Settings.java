@@ -2,11 +2,14 @@
 package com.aware.plugin.google.fused_location;
 
 import com.aware.Aware;
+import com.aware.ui.Aware_Toolbar;
 import com.google.android.gms.location.LocationRequest;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -66,7 +69,7 @@ public class Settings extends Activity {
         super.onCreate(savedInstanceState);
         
         setContentView(R.layout.settings);
-        
+
         update_frequency = (EditText) findViewById(R.id.update_frequency);
         update_frequency.setText(Aware.getSetting(this, Settings.FREQUENCY_GOOGLE_FUSED_LOCATION));
         

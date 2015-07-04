@@ -28,7 +28,9 @@ public class Algorithm extends IntentService {
         if( intent != null && intent.hasExtra(LocationServices.FusedLocationApi.KEY_LOCATION_CHANGED ) ) {
         
             Location bestLocation = (Location) intent.getExtras().get(LocationServices.FusedLocationApi.KEY_LOCATION_CHANGED);
-            
+
+            if( bestLocation == null ) return;
+
             ContentValues rowData = new ContentValues();
             rowData.put(Locations_Data.TIMESTAMP, System.currentTimeMillis());
             rowData.put(Locations_Data.DEVICE_ID, Aware.getSetting(this,Aware_Preferences.DEVICE_ID));

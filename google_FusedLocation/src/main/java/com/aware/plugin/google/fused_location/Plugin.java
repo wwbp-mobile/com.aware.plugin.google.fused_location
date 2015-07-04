@@ -29,6 +29,11 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
      * Broadcasted event: new location available
      */
     public static final String ACTION_AWARE_LOCATIONS = "ACTION_AWARE_LOCATIONS";
+
+    /**
+     * This plugin's package name
+     */
+    private final String PACKAGE_NAME = "com.aware.plugin.google.fused_location";
     
     //holds accuracy and frequency parameters
     private final static LocationRequest mLocationRequest = new LocationRequest();
@@ -81,8 +86,7 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
             Log.e(TAG,"Google Services fused location is not available on this device.");
             stopSelf();
         } else {
-            Intent locationIntent = new Intent();
-            locationIntent.setClassName(getPackageName(), getPackageName() + ".Algorithm");
+            Intent locationIntent = new Intent(this, com.aware.plugin.google.fused_location.Algorithm.class);
             pIntent = PendingIntent.getService(this, 0, locationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             mLocationClient = new GoogleApiClient.Builder(this)
@@ -90,12 +94,13 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API)
                     .build();
-            mLocationClient.connect();
         }
     }
     
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        mLocationClient.connect();
+
         if( mLocationClient.isConnected() ) {
             mLocationRequest.setPriority(Integer.parseInt(Aware.getSetting(this, Settings.ACCURACY_GOOGLE_FUSED_LOCATION)));
             mLocationRequest.setInterval(Long.parseLong(Aware.getSetting(this, Settings.FREQUENCY_GOOGLE_FUSED_LOCATION)) * 1000);
@@ -113,6 +118,7 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
         if( mLocationClient != null ) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mLocationClient, pIntent);
         }
+        Aware.stopPlugin(this, PACKAGE_NAME);
     }
     
     private boolean is_google_services_available() {
@@ -127,7 +133,7 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
     @Override
     public void onConnected(Bundle arg0) {
         Log.i(TAG,"Connected to Google's Location API");
-        Aware.startPlugin(this, getPackageName());
+        Aware.startPlugin(this, PACKAGE_NAME);
     }
 
     @Override

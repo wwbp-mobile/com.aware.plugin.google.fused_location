@@ -2,74 +2,214 @@
 <items version="2" >
 
     <item
-        jar="/Users/denzil/BTSync/Programming/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.google.android.gms/play-services/6.5.87/classes.jar"
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.google.android.gms/play-services-gcm/7.5.0/jars/classes.jar"
         jumboMode="false"
-        revision="21.1.2"
-        sha1="dd9247ea0fabe8ee479638c4b4a23e93752be256">
-        <dex dex="/Users/denzil/BTSync/Programming/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-3d1cd9e21769cf3ea9db2eefc5025ddf011a01d7.jar" />
+        revision="22.0.1"
+        sha1="8d736fefa22d896e84a268354b3ed48a42663150">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-ce6966832a2141758c9fd5ffe064885dd89195ba.jar" />
     </item>
     <item
-        jar="/Users/denzil/BTSync/Programming/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/classes.jar"
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.google.android.gms/play-services-appstate/7.5.0/jars/classes.jar"
         jumboMode="false"
-        revision="21.1.2"
-        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
-        <dex dex="/Users/denzil/BTSync/Programming/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-8a12d6d31b689a6a6337dd3e6b6b1048409dc9ab.jar" />
+        revision="22.0.1"
+        sha1="68c140702c7242d914655bcb3164d9e8c45b84cb">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-e73f96e7ee634e85644860b9b5934959efae8497.jar" />
     </item>
     <item
-        jar="/Users/denzil/BTSync/Programming/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.android.support/gridlayout-v7/21.0.3/classes.jar"
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.google.android.gms/play-services-cast/7.5.0/jars/classes.jar"
         jumboMode="false"
-        revision="21.1.2"
-        sha1="2e8c06a7aad26ba8d2d5cab8134556594fe36856">
-        <dex dex="/Users/denzil/BTSync/Programming/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-a371bb8917532da69e830fd0e14da20467ea699f.jar" />
+        revision="22.0.1"
+        sha1="8e3a972f28b8bae817e382257ba177a31bcadbbc">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-f44c616b3acbeac8a162c719f77b117fd5f291d2.jar" />
     </item>
     <item
-        jar="/Users/denzil/BTSync/Programming/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.awareframework/aware-core/3.2.8/libs/mqtt-client-0.4.0.jar"
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.awareframework/aware-core/3.4.7/jars/libs/org.eclipse.paho.client.mqttv3-1.0.2.jar"
         jumboMode="false"
-        revision="21.1.2"
-        sha1="02315d1759d01e52495e040e6e538aaa2e91c7f6">
-        <dex dex="/Users/denzil/BTSync/Programming/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/mqtt-client-0.4.0-8b83671a291d4b6c94dd5aedd739dbbd5fd414dc.jar" />
+        revision="22.0.1"
+        sha1="11752d3f24d1a9deda4533a7ca18d8496417ceeb">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/org.eclipse.paho.client.mqttv3-1.0.2-c3081e1dd01227c88060bd428197a317c4162b29.jar" />
     </item>
     <item
-        jar="/Users/denzil/BTSync/Programming/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/libs/internal_impl-21.0.3.jar"
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.android.support/cardview-v7/22.2.0/jars/classes.jar"
         jumboMode="false"
-        revision="21.1.2"
-        sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
-        <dex dex="/Users/denzil/BTSync/Programming/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/internal_impl-21.0.3-f96925ddbe54cfd60f9738ddff80c83da8567a02.jar" />
+        revision="22.0.1"
+        sha1="97f7e239e86ef994de894818fdd8a71d2e89d6aa">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-abc97e9af243f806f365e70d07a375f671c5105b.jar" />
     </item>
     <item
-        jar="/Users/denzil/BTSync/Programming/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/classes.jar"
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.0/jars/classes.jar"
         jumboMode="false"
-        revision="21.1.2"
-        sha1="81d42bf983a8741f4888a6e333e454e4a5e0eeb7">
-        <dex dex="/Users/denzil/BTSync/Programming/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-82718d16322fb4b4682515ae88328323f7050dbd.jar" />
+        revision="22.0.1"
+        sha1="1ee588ff2c4daf7b97c1cbf922a6c7f027285c2f">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-cdff34a651bbfb23a93ba8cb11e8d497ec48a8c1.jar" />
     </item>
     <item
-        jar="/Users/denzil/BTSync/Programming/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.awareframework/aware-core/3.2.8/classes.jar"
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.awareframework/aware-core/3.4.7/jars/libs/zbar.jar"
         jumboMode="false"
-        revision="21.1.2"
-        sha1="0c47b9d9e68a9f0b5a7e4c14453ed467e1f1d3cf">
-        <dex dex="/Users/denzil/BTSync/Programming/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-5fd09a7b886ad7a6ba72c58b7002ed1ae0171946.jar" />
-    </item>
-    <item
-        jar="/Users/denzil/BTSync/Programming/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.awareframework/aware-core/3.2.8/libs/zbar.jar"
-        jumboMode="false"
-        revision="21.1.2"
+        revision="22.0.1"
         sha1="0a7b88ba1496a0b4af76069ad40dacd3897149e0">
-        <dex dex="/Users/denzil/BTSync/Programming/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/zbar-9f783e357632ccd1c6a60987f116e11c005af314.jar" />
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/zbar-6501082579e39287986a56c0c86e39f8a3b59dc2.jar" />
     </item>
     <item
-        jar="/Users/denzil/BTSync/Programming/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.android.support/cardview-v7/21.0.3/classes.jar"
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/7.5.0/jars/classes.jar"
         jumboMode="false"
-        revision="21.1.2"
-        sha1="00b0b7233e1ec64acebfac40d4983d32d4712426">
-        <dex dex="/Users/denzil/BTSync/Programming/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-762c0a121a2d504382996fe5ee05d446b546cce4.jar" />
+        revision="22.0.1"
+        sha1="a78183f30e769a98ab4820794f597763088d3065">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-aa697987ca5360d589449af6209bc2fbf8450759.jar" />
     </item>
     <item
-        jar="/Users/denzil/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/21.0.3/support-annotations-21.0.3.jar"
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.android.support/appcompat-v7/22.2.0/jars/classes.jar"
         jumboMode="false"
-        revision="21.1.2"
-        sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
-        <dex dex="/Users/denzil/BTSync/Programming/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/support-annotations-21.0.3-a68fa4c33b231a0a4e81871ee3a61dc53e2cff11.jar" />
+        revision="22.0.1"
+        sha1="73753982da6bde518f3a4c6b372749981d14d1a0">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-a2585b66467a77bbc777fe8bee9753af0bca5914.jar" />
+    </item>
+    <item
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.google.android.gms/play-services-analytics/7.5.0/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="e7b35244f50663b3f8d150714bca9ecd7a290da1">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-7d1c2b788361df462e319ad945efefa5632b9c04.jar" />
+    </item>
+    <item
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.awareframework/aware-core/3.4.7/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="65eb2caebe7be5f1191076f7b0aebbb984e710de">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-742d23f7bfc21ff03767f3a2296cc432b00877ce.jar" />
+    </item>
+    <item
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.google.android.gms/play-services-maps/7.5.0/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="06a42becc33232ec0ee125161da68c1829c9f8fd">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-a3f4871e99f41d95699fc0eb0b66e5f35fcf4c71.jar" />
+    </item>
+    <item
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/22.0.0/jars/libs/internal_impl-22.0.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="ba3df4eb0a630d7de294f0e48d3f9267d279b784">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/internal_impl-22.0.0-a6ecddd88b2f03efda91ae9788494418d2366768.jar" />
+    </item>
+    <item
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.google.android.gms/play-services-games/7.5.0/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="02bac2dc792d78241077861566f2c82da955e7fa">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-b0211c406e85b406f4be3331062d5e023c3fcecb.jar" />
+    </item>
+    <item
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.google.android.gms/play-services-fitness/7.5.0/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="a172852a35ff919e85b9b7f14bbc15c5bee25520">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-1c654118c4b1e5f64321681dbadf259c4343b30b.jar" />
+    </item>
+    <item
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/22.0.0/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="a1372c17fccacca753d3951d3ad820571cbce075">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-400a3ef0f60392c3da08b96ab70671d7d9a335fd.jar" />
+    </item>
+    <item
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.google.android.gms/play-services-appindexing/7.5.0/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="f02127a85abd52a2cd526d4c2409f21969f80ee8">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-71c0186a8e4c169870dcb31394ffe193193da03c.jar" />
+    </item>
+    <item
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.google.android.gms/play-services-panorama/7.5.0/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="ba207be21987c11b37d9f8faa08ed6e722569f30">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-ab238d932797a10f5463b9e2b380d01901696f57.jar" />
+    </item>
+    <item
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.google.android.gms/play-services-appinvite/7.5.0/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="63ec6e9f4fe5482a7447d0f3091b8e543a02554c">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-d0f68b2262249340ff2e0acac431343e759c6ab0.jar" />
+    </item>
+    <item
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.0/jars/libs/internal_impl-22.2.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="57f2ab85c164ff1676ec64dee787981c046fab79">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/internal_impl-22.2.0-7b19d9748d528f49af62fa215159daab98222e18.jar" />
+    </item>
+    <item
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.google.android.gms/play-services-location/7.5.0/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="1e98ef3f124bb7a11f8575f9ff5dfea330b61b6f">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-21ba27ecc27115b5904cc9f24ff0b2baf36a86a2.jar" />
+    </item>
+    <item
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.google.android.gms/play-services-ads/7.5.0/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="29ebc7e04d877062317c8cc0e68b20f0c1fcda66">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-e38597fe3b5c002f1e77336485c912649c66a0c7.jar" />
+    </item>
+    <item
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.google.android.gms/play-services-safetynet/7.5.0/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="1a6411087ab88ce5542f593e63a2752b6b0d6f1a">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-b5e6ca3b88a82f277f52c57e1dfefffacdb19856.jar" />
+    </item>
+    <item
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.google.android.gms/play-services-wearable/7.5.0/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="69dd177337ead693c408c8dddc9546bb6f1244fa">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-8b5c43438309c5050286f22af8b5ddee19dacc5a.jar" />
+    </item>
+    <item
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.google.android.gms/play-services-nearby/7.5.0/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="6440e5e5cfe368f9bff3c537fb8988048069cb33">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-b6b48dc1c374c29e68fdca7c2aca613731d2442b.jar" />
+    </item>
+    <item
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.google.android.gms/play-services-identity/7.5.0/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="d405025c600055237c171a0bbabaa49d69696573">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-74b047efb34677a161023afa343b63c3822bbef7.jar" />
+    </item>
+    <item
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.google.android.gms/play-services-plus/7.5.0/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="272bc5d7063f24bc3a33ea1d318cde8f31f5ec4c">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-e0fcc04ee810407dc82599254556fcec74314d78.jar" />
+    </item>
+    <item
+        jar="/Users/denzil/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/22.2.0/support-annotations-22.2.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="66b42a1f3eb7676070b7ef7f14b603483aecbee1">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/support-annotations-22.2.0-12068f539aca5e59cda22ba9d972255d6f642a96.jar" />
+    </item>
+    <item
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.google.android.gms/play-services-wallet/7.5.0/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="6836d188602ec5382d1967c58b00960eb8ff8773">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-5bfbc5f53ecb1e97059e4a68b7b0d81f8560c421.jar" />
+    </item>
+    <item
+        jar="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/exploded-aar/com.google.android.gms/play-services-drive/7.5.0/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="f44d03c138cb6488fdbaa65e3a7e5878861a56d8">
+        <dex dex="/Users/denzil/AndroidStudioProjects/com.aware.plugin.google.fused_location/google_FusedLocation/build/intermediates/pre-dexed/debug/classes-527a656588b0a5002b372106d34f525167a18cb9.jar" />
     </item>
 
 </items>
