@@ -100,7 +100,6 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         mLocationClient.connect();
-
         if( mLocationClient.isConnected() ) {
             mLocationRequest.setPriority(Integer.parseInt(Aware.getSetting(this, Settings.ACCURACY_GOOGLE_FUSED_LOCATION)));
             mLocationRequest.setInterval(Long.parseLong(Aware.getSetting(this, Settings.FREQUENCY_GOOGLE_FUSED_LOCATION)) * 1000);

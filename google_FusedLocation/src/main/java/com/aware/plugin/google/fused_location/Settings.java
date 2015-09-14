@@ -129,9 +129,7 @@ public class Settings extends Activity {
                         break;
                 }
                 
-                Intent apply = new Intent(getApplicationContext(), Plugin.class);
-                apply.putExtra("update",true);
-                startService(apply);
+                Aware.startPlugin(getApplicationContext(), "com.aware.plugin.google.fused_location");
 
                 finish();
             }
