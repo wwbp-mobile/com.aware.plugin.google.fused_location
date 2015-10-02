@@ -92,8 +92,10 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
             mLocationClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
+                    .addApiIfAvailable(LocationServices.API)
                     .build();
+
+            Aware.startPlugin(this, PACKAGE_NAME);
         }
     }
     
@@ -126,6 +128,7 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
 
     @Override
     public void onConnectionFailed(ConnectionResult connection_result ) {
+        if( connection_result.getErrorCode() == ConnectionResult.API_UNAVAILABLE ) stopSelf();
         if( DEBUG ) Log.w(TAG, "Error connecting to Google Fused Location services, will try again in 5 minutes");
     }
 
