@@ -2,21 +2,24 @@
 package com.aware.plugin.google.fused_location;
 
 import com.aware.Aware;
+import com.aware.ui.Aware_Activity;
 import com.aware.ui.Aware_Toolbar;
 import com.google.android.gms.location.LocationRequest;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-public class Settings extends Activity {
+public class Settings extends AppCompatActivity {
 
 	/**
 	 * Boolean to activate/deactivate Google Fused Location
@@ -135,7 +138,15 @@ public class Settings extends Activity {
             }
         });
     }
-    
+
+    @Override
+    public void onPostCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
+        super.onPostCreate(savedInstanceState, persistentState);
+
+        Toolbar aware_toolbar = (Toolbar) findViewById(R.id.aware_toolbar);
+        setSupportActionBar(aware_toolbar);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
