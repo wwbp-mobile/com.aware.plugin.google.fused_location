@@ -8,8 +8,8 @@ android {
         applicationId "com.aware.plugin.google.fused_location"
         minSdkVersion 10
         targetSdkVersion 23
-        versionCode 13
-        versionName "4.0"
+        versionCode 14
+        versionName "4.1"
     }
 
     buildTypes {
@@ -28,5 +28,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.0'
     compile 'com.google.android.gms:play-services-location:8.1.0'
     compile 'com.android.support:cardview-v7:23.1.0'
-    compile 'com.awareframework:aware-core:+@aar'
+    compile 'com.awareframework:aware-core:3.7.7@aar'
 }
