@@ -42,7 +42,7 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
     
     //holds accuracy and frequency parameters
     private final static LocationRequest mLocationRequest = new LocationRequest();
-    private static PendingIntent pIntent = null;
+
     private static GoogleApiClient mLocationClient = null;
     
     @Override
@@ -94,9 +94,6 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
             Log.e(TAG,"Google Services fused location is not available on this device.");
             stopSelf();
         } else {
-            Intent locationIntent = new Intent(this, com.aware.plugin.google.fused_location.Algorithm.class);
-            pIntent = PendingIntent.getService(this, 0, locationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
             mLocationClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
@@ -109,7 +106,6 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
     
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        super.onStartCommand(intent, flags, startId);
 
         mLocationClient.connect();
         if( mLocationClient.isConnected() ) {
@@ -118,6 +114,8 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
             mLocationRequest.setFastestInterval(Long.parseLong(Aware.getSetting(this, Settings.MAX_FREQUENCY_GOOGLE_FUSED_LOCATION)) * 1000);
 
             if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ) {
+                Intent locationIntent = new Intent(this, com.aware.plugin.google.fused_location.Algorithm.class);
+                PendingIntent pIntent = PendingIntent.getService(this, 0, locationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
                 LocationServices.FusedLocationApi.requestLocationUpdates(mLocationClient, mLocationRequest, pIntent);
             }
         }
@@ -130,6 +128,8 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
         Aware.setSetting(this, Settings.STATUS_GOOGLE_FUSED_LOCATION, false);
 
         if( mLocationClient != null ) {
+            Intent locationIntent = new Intent(this, com.aware.plugin.google.fused_location.Algorithm.class);
+            PendingIntent pIntent = PendingIntent.getService(this, 0, locationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             LocationServices.FusedLocationApi.removeLocationUpdates(mLocationClient, pIntent);
         }
         Aware.stopPlugin(this, PACKAGE_NAME);
