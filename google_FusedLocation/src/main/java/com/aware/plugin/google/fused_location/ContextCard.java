@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -25,7 +26,9 @@ public class ContextCard implements IContextCard {
         View card = inflater.inflate(R.layout.card, null);
         TextView address = (TextView) card.findViewById(R.id.address);
 
-        Cursor last_location = context.getContentResolver().query(Locations_Provider.Locations_Data.CONTENT_URI, null, null, null, Locations_Provider.Locations_Data.TIMESTAMP + " DESC LIMIT 1");
+        Uri locationURI = Uri.parse("content://com.aware.plugin.google.fused_location.provider.locations/locations");
+//        Locations_Provider.Locations_Data.CONTENT_URI
+        Cursor last_location = context.getContentResolver().query(locationURI, null, null, null, Locations_Provider.Locations_Data.TIMESTAMP + " DESC LIMIT 1");
         if( last_location != null && last_location.moveToFirst() ) {
             double lat = last_location.getDouble(last_location.getColumnIndex(Locations_Provider.Locations_Data.LATITUDE));
             double lon = last_location.getDouble(last_location.getColumnIndex(Locations_Provider.Locations_Data.LONGITUDE));

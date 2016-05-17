@@ -14,7 +14,7 @@ Google's Locations API provider. This plugin provides the user's current locatio
 # Broadcasts
 **ACTION_AWARE_LOCATIONS**
 Broadcasted when we acquired a new location, with the following extras:
-- **data**: (ContentValues) latest location information
+- **data**: (Location) latest location information
     
 # Providers
 ##  Locations Data
