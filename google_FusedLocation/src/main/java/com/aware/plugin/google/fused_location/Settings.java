@@ -1,23 +1,16 @@
 
 package com.aware.plugin.google.fused_location;
 
-import com.aware.Aware;
-import com.aware.ui.Aware_Activity;
-import com.aware.ui.Aware_Toolbar;
-import com.google.android.gms.location.LocationRequest;
-
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+
+import com.aware.Aware;
+import com.google.android.gms.location.LocationRequest;
 
 public class Settings extends AppCompatActivity {
 
@@ -137,14 +130,6 @@ public class Settings extends AppCompatActivity {
                 finish();
             }
         });
-    }
-
-    @Override
-    public void onPostCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
-        super.onPostCreate(savedInstanceState, persistentState);
-
-        Toolbar aware_toolbar = (Toolbar) findViewById(R.id.aware_toolbar);
-        setSupportActionBar(aware_toolbar);
     }
 
     @Override

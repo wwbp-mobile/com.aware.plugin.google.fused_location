@@ -4,8 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <include android:id="@+id/aware_toolbar" layout="@layout/aware_toolbar"/>
-
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
