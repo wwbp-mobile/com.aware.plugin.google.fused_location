@@ -35,6 +35,7 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
      * Broadcasted event: new location available
      */
     public static final String ACTION_AWARE_LOCATIONS = "ACTION_AWARE_LOCATIONS";
+    public static final String EXTRA_DATA = "data";
 
     /**
      * This plugin's package name
