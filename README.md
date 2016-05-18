@@ -1,19 +1,23 @@
-AWARE Plugin: Ambient Noise
-===========================
+AWARE Plugin: Google Fused Location
+===================================
 
-Google's Locations API provider. This plugin provides the user's current location in an energy efficient way.
+Google's Fused Locations API. This plugin provides the user's current location in an energy efficient way.
 
-[ ![Download](https://api.bintray.com/packages/denzilferreira/com.awareframework/com.aware.plugin.ambient_noise/images/download.svg) ](https://bintray.com/denzilferreira/com.awareframework/com.aware.plugin.ambient_noise/_latestVersion)
+[ ![Download](https://api.bintray.com/packages/denzilferreira/com.awareframework/com.aware.plugin.google.fused_location/images/download.svg) ](https://bintray.com/denzilferreira/com.awareframework/com.aware.plugin.google.fused_location/_latestVersion)
 
 # Settings
 * **status_google_fused_location**: (boolean) activate/deactivate plugin
 * **frequency_google_fused_location**: (integer) How frequently to fetch user's location (in seconds)
 * **max_frequency_google_fused_location**: (integer) How fast are you willing to get the latest location (in seconds). Set it smaller/same as the previous frequency.
-* **accuracy_google_fused_location**: (integer) One of the following numbers: 100 (High accuracy); 102 (balanced); 104 (low power); 105 (no power, listens to others location requests)
+* **accuracy_google_fused_location**: (integer) One of the following numbers:
+    * 100 (high power): uses GPS only - works best outdoors, highest accuracy
+    * 102 (balanced): uses GPS, Network and Wifi - works both indoors and outdoors, good accuracy
+    * 104 (low power): uses only Network and WiFi - poorest accuracy, medium accuracy
+    * 105 (no power) - scavenges location requests from other apps
 
 # Broadcasts
 **ACTION_AWARE_LOCATIONS**
-Broadcasted when we acquired a new location, with the following extras:
+Broadcasted when we have a new location, with the following extras:
 - **data**: (Location) latest location information
     
 # Providers
