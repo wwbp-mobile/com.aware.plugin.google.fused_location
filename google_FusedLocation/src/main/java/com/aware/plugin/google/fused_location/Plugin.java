@@ -5,6 +5,7 @@ import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -44,11 +45,12 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
      */
     private final String PACKAGE_NAME = "com.aware.plugin.google.fused_location";
 
-
-
     private static GoogleApiClient mLocationClient;
     private final static LocationRequest mLocationRequest = new LocationRequest();
     private static PendingIntent pIntent;
+
+    public static Location lastlocation;
+    public static ContextProducer contextProducer;
 
     @Override
     public void onCreate() {
@@ -64,9 +66,11 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
             @Override
             public void onContext() {
                 Intent context = new Intent(ACTION_AWARE_LOCATIONS);
+                context.putExtra(Plugin.EXTRA_DATA, lastlocation);
                 sendBroadcast(context);
             }
         };
+        contextProducer = CONTEXT_PRODUCER;
 
         REQUIRED_PERMISSIONS.add(Manifest.permission.ACCESS_COARSE_LOCATION);
         REQUIRED_PERMISSIONS.add(Manifest.permission.ACCESS_FINE_LOCATION);

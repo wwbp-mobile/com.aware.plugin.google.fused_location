@@ -45,10 +45,9 @@ public class Algorithm extends IntentService {
             getContentResolver().insert(Locations_Data.CONTENT_URI, rowData);
             
             if( DEBUG ) Log.d(Plugin.TAG, "Fused location:" + rowData.toString());
-            
-            Intent locationEvent = new Intent(Plugin.ACTION_AWARE_LOCATIONS);
-            locationEvent.putExtra(Plugin.EXTRA_DATA, bestLocation);
-            sendBroadcast(locationEvent);
+
+            Plugin.lastlocation = bestLocation;
+            Plugin.contextProducer.onContext();
         }
     }
 }
