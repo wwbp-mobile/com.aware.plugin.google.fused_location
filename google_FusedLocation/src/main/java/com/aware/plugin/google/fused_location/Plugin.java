@@ -5,6 +5,7 @@ import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -52,6 +53,8 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
     public static Location lastlocation;
     public static ContextProducer contextProducer;
 
+    private static boolean GEOFENCED = false;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -93,6 +96,9 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
             Intent locationIntent = new Intent(this, com.aware.plugin.google.fused_location.Algorithm.class);
             pIntent = PendingIntent.getService(this, 0, locationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+            Intent geofences = new Intent(this, com.aware.plugin.google.fused_location.Geofences.class);
+            startService(geofences);
+
             Aware.startPlugin(this, PACKAGE_NAME);
         }
     }
@@ -100,14 +106,14 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            if (mLocationClient != null && !mLocationClient.isConnected()) mLocationClient.connect();
+            if (mLocationClient != null && !mLocationClient.isConnected())
+                mLocationClient.connect();
             if (mLocationClient != null && mLocationClient.isConnected()
                     && (
                     mLocationRequest.getPriority() != Integer.parseInt(Aware.getSetting(this, Settings.ACCURACY_GOOGLE_FUSED_LOCATION))
-                    || mLocationRequest.getFastestInterval() != Long.parseLong(Aware.getSetting(this, Settings.MAX_FREQUENCY_GOOGLE_FUSED_LOCATION))*1000
-                    || mLocationRequest.getInterval() != Long.parseLong(Aware.getSetting(this, Settings.FREQUENCY_GOOGLE_FUSED_LOCATION)) * 1000)
-                    )
-            {
+                            || mLocationRequest.getFastestInterval() != Long.parseLong(Aware.getSetting(this, Settings.MAX_FREQUENCY_GOOGLE_FUSED_LOCATION)) * 1000
+                            || mLocationRequest.getInterval() != Long.parseLong(Aware.getSetting(this, Settings.FREQUENCY_GOOGLE_FUSED_LOCATION)) * 1000)
+                    ) {
                 mLocationRequest.setPriority(Integer.parseInt(Aware.getSetting(this, Settings.ACCURACY_GOOGLE_FUSED_LOCATION)));
                 mLocationRequest.setInterval(Long.parseLong(Aware.getSetting(this, Settings.FREQUENCY_GOOGLE_FUSED_LOCATION)) * 1000);
                 mLocationRequest.setFastestInterval(Long.parseLong(Aware.getSetting(this, Settings.MAX_FREQUENCY_GOOGLE_FUSED_LOCATION)) * 1000);
@@ -115,8 +121,39 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
                 LocationServices.FusedLocationApi.removeLocationUpdates(mLocationClient, pIntent); //remove old
                 LocationServices.FusedLocationApi.requestLocationUpdates(mLocationClient, mLocationRequest, pIntent); //add new
             }
+
+            checkGeofences(); //checks the geofence states every 5 minutes, as current location changes
         }
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    /**
+     * How are we doing regarding the geofences?
+     */
+    private void checkGeofences() {
+        if (lastlocation != null) {
+            if (!GeofenceUtils.getLabel(this, lastlocation).equalsIgnoreCase("Somewhere")) {
+                if (!GEOFENCED) {
+                    Intent geofenced = new Intent(Geofences.ACTION_AWARE_PLUGIN_FUSED_ENTER_GEOFENCE);
+                    geofenced.putExtra(Geofences.EXTRA_DATA, lastlocation);
+                    sendBroadcast(geofenced);
+
+                    if (Aware.DEBUG)
+                        Log.d(Aware.TAG, "Entered geofence: " + lastlocation.toString() + " Label:" + GeofenceUtils.getLabel(this, lastlocation));
+                }
+                GEOFENCED = true;
+            } else {
+                if (GEOFENCED) {
+                    Intent notgeofenced = new Intent(Geofences.ACTION_AWARE_PLUGIN_FUSED_EXIT_GEOFENCE);
+                    notgeofenced.putExtra(Geofences.EXTRA_DATA, lastlocation);
+                    sendBroadcast(notgeofenced);
+
+                    if (Aware.DEBUG)
+                        Log.d(Aware.TAG, "Exited geofence: " + lastlocation.toString() + " Label:" + GeofenceUtils.getLabel(this, lastlocation));
+                }
+                GEOFENCED = false;
+            }
+        }
     }
 
     @Override
@@ -128,6 +165,10 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
             LocationServices.FusedLocationApi.removeLocationUpdates(mLocationClient, pIntent);
             mLocationClient.disconnect();
         }
+
+        Intent geofences = new Intent(this, com.aware.plugin.google.fused_location.Geofences.class);
+        stopService(geofences);
+
         Aware.stopPlugin(this, PACKAGE_NAME);
     }
 
