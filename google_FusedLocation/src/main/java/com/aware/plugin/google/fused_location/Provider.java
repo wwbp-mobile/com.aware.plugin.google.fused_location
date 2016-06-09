@@ -203,7 +203,7 @@ public class Provider extends ContentProvider {
         int count;
         switch (sUriMatcher.match(uri)) {
             case GEO_DIR:
-                count = database.update(DATABASE_TABLES[1], values, selection, selectionArgs);
+                count = database.update(DATABASE_TABLES[0], values, selection, selectionArgs);
                 break;
             default:
                 database.close();

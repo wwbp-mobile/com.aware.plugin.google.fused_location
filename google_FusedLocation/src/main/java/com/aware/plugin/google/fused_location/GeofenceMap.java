@@ -1,33 +1,31 @@
 package com.aware.plugin.google.fused_location;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
-import android.text.format.DateUtils;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.SeekBar;
 
-import com.aware.Aware;
-import com.aware.Aware_Preferences;
 import com.aware.providers.Locations_Provider;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-
-import java.io.IOException;
-import java.util.List;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
  * Created by denzil on 08/06/16.
@@ -39,9 +37,11 @@ public class GeofenceMap extends FragmentActivity implements OnMapReadyCallback 
     private static EditText label;
     private static SeekBar radius;
     private static FloatingActionButton save_label;
-    private static Circle geofence;
 
-    private static String loadedLabel = "";
+    private static Circle geofence;
+    private static Marker geocenter;
+
+    static String loadedLabel = "";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -83,14 +83,15 @@ public class GeofenceMap extends FragmentActivity implements OnMapReadyCallback 
             }
         });
         save_label = (FloatingActionButton) findViewById(R.id.save_label);
-
+        save_label.setBackgroundColor(Color.parseColor("#33B5E5"));
         save_label.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (label.getText().toString().length() > 0) {
                     Location geoLocal = new Location("Fused Location");
-                    geoLocal.setLatitude(geofence.getCenter().latitude);
-                    geoLocal.setLongitude(geofence.getCenter().longitude);
+                    geoLocal.setLatitude(geocenter.getPosition().latitude);
+                    geoLocal.setLongitude(geocenter.getPosition().longitude);
+
                     GeofenceUtils.saveLabel(
                             getApplicationContext(),
                             label.getText().toString(),
@@ -106,6 +107,13 @@ public class GeofenceMap extends FragmentActivity implements OnMapReadyCallback 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        mMap.setBuildingsEnabled(true);
+        mMap.setIndoorEnabled(true);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+        }
 
         Location user_location = null;
         Cursor last_location = getContentResolver().query(Locations_Provider.Locations_Data.CONTENT_URI, null, null, null, Locations_Provider.Locations_Data.TIMESTAMP + " DESC LIMIT 1");
@@ -124,14 +132,55 @@ public class GeofenceMap extends FragmentActivity implements OnMapReadyCallback 
         }
 
         if (user_location != null) {
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(user_location.getLatitude(), user_location.getLongitude()), 15));
+            mMap.animateCamera(
+                    CameraUpdateFactory.newLatLngZoom(
+                            new LatLng(user_location.getLatitude(), user_location.getLongitude())
+                            , 18)); //18 allows indoor maps, if available
+
+            geocenter = mMap.addMarker(new MarkerOptions()
+                .position(new LatLng(user_location.getLatitude(), user_location.getLongitude()))
+                .flat(true)
+                .draggable(true)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_action_map_here))
+            );
+
             geofence = mMap.addCircle(new CircleOptions()
                     .center(new LatLng(user_location.getLatitude(), user_location.getLongitude()))
                     .radius(radius.getProgress())
-                    .fillColor(0x7F33B5E5)
-                    .strokeColor(Color.parseColor("#ffffff"))
-                    .strokeWidth(1)
+                    .strokeColor(Color.RED)
+                    .strokeWidth(2)
             );
+
+            mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+                @Override
+                public void onMarkerDragStart(Marker marker) {
+                    geofence.setCenter(
+                            new LatLng(marker.getPosition().latitude, marker.getPosition().longitude)
+                    );
+                }
+
+                @Override
+                public void onMarkerDrag(Marker marker) {
+                    geofence.setCenter(
+                            new LatLng(marker.getPosition().latitude, marker.getPosition().longitude)
+                    );
+                }
+
+                @Override
+                public void onMarkerDragEnd(Marker marker) {
+                    geofence.setCenter(
+                            new LatLng(marker.getPosition().latitude, marker.getPosition().longitude)
+                    );
+                }
+            });
+
+            mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                @Override
+                public void onMapClick(LatLng latLng) {
+                    geofence.setCenter(latLng);
+                    geocenter.setPosition(latLng);
+                }
+            });
         }
     }
 }

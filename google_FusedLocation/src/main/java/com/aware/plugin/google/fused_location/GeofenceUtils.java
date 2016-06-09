@@ -22,25 +22,32 @@ public class GeofenceUtils {
      */
     public static String getLabel(Context context, Location currentLocation) {
         String label = "";
-
-        Cursor labels = getLabels(context, null);
-        if (labels != null && labels.moveToFirst()) {
+        Cursor geofences = getLabels(context, null);
+        if (geofences != null && geofences.moveToFirst()) {
             do {
-                float[] distance = new float[2];
-                Location labelGPS = new Location("Fused location");
-                labelGPS.setLatitude(labels.getDouble(labels.getColumnIndex(Provider.Geofences.GEO_LAT)));
-                labelGPS.setLongitude(labels.getDouble(labels.getColumnIndex(Provider.Geofences.GEO_LONG)));
+                Location labelLocation = new Location("Label location");
+                labelLocation.setLatitude(geofences.getDouble(geofences.getColumnIndex(Provider.Geofences.GEO_LAT)));
+                labelLocation.setLongitude(geofences.getDouble(geofences.getColumnIndex(Provider.Geofences.GEO_LONG)));
 
-                Location.distanceBetween( currentLocation.getLatitude(), currentLocation.getLongitude(), labelGPS.getLatitude(), labelGPS.getLongitude(), distance);
-
-                if (distance[0] < labels.getDouble(labels.getColumnIndex(Provider.Geofences.GEO_RADIUS))) {
-                    label = labels.getString(labels.getColumnIndex(Provider.Geofences.GEO_LABEL));
-                    break;
+                if (GeofenceUtils.getDistance(currentLocation, labelLocation) <= 0.05) {
+                    label = geofences.getString(geofences.getColumnIndex(Provider.Geofences.GEO_LABEL));
                 }
-            } while (labels.moveToNext());
+            } while (geofences.moveToNext());
+            geofences.close();
         }
-        if (labels != null && !labels.isClosed()) labels.close();
         return ((label.length()>0) ? label : "Somewhere");
+    }
+
+    /**
+     * Given two coordinates, what's the distance between each other in kilometers
+     * @param a
+     * @param b
+     * @return
+     */
+    public static float getDistance(Location a, Location b) {
+        float[] distance = new float[2];
+        Location.distanceBetween(a.getLatitude(), a.getLongitude(), b.getLatitude(), b.getLongitude(), distance);
+        return distance[0]/1000;
     }
 
     /**

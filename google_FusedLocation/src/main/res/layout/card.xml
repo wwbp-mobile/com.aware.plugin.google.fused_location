@@ -33,4 +33,15 @@
         android:layout_below="@+id/last_updated"
         android:layout_alignRight="@+id/last_updated"
         android:layout_marginRight="5dp" />
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:id="@+id/geofences_list"
+        android:layout_below="@+id/geofencer"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:fastScrollEnabled="false"
+        android:fastScrollAlwaysVisible="false" />
+
 </RelativeLayout>

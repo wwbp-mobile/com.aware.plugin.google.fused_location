@@ -46,7 +46,6 @@ public class Algorithm extends IntentService {
             
             if( DEBUG ) Log.d(Plugin.TAG, "Fused location:" + rowData.toString());
 
-            Plugin.lastlocation = bestLocation;
             Plugin.contextProducer.onContext();
         }
     }

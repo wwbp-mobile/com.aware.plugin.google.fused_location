@@ -50,10 +50,7 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
     private final static LocationRequest mLocationRequest = new LocationRequest();
     private static PendingIntent pIntent;
 
-    public static Location lastlocation;
     public static ContextProducer contextProducer;
-
-    private static boolean GEOFENCED = false;
 
     @Override
     public void onCreate() {
@@ -68,9 +65,20 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
         CONTEXT_PRODUCER = new ContextProducer() {
             @Override
             public void onContext() {
+                Location currentLocation = new Location("Current location");
+                Cursor data = getContentResolver().query(Locations_Data.CONTENT_URI, null, null, null, Locations_Data.TIMESTAMP + " DESC LIMIT 1");
+                if (data != null && data.moveToFirst()) {
+                    currentLocation.setLatitude(data.getDouble(data.getColumnIndex(Locations_Data.LATITUDE)));
+                    currentLocation.setLongitude(data.getDouble(data.getColumnIndex(Locations_Data.LONGITUDE)));
+                    currentLocation.setAccuracy(data.getFloat(data.getColumnIndex(Locations_Data.ACCURACY)));
+                }
+                if (data!= null && ! data.isClosed()) data.close();
+
                 Intent context = new Intent(ACTION_AWARE_LOCATIONS);
-                context.putExtra(Plugin.EXTRA_DATA, lastlocation);
+                context.putExtra(Plugin.EXTRA_DATA, currentLocation);
                 sendBroadcast(context);
+
+                checkGeofences();
             }
         };
         contextProducer = CONTEXT_PRODUCER;
@@ -122,7 +130,7 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
                 LocationServices.FusedLocationApi.requestLocationUpdates(mLocationClient, mLocationRequest, pIntent); //add new
             }
 
-            checkGeofences(); //checks the geofence states every 5 minutes, as current location changes
+            checkGeofences(); //checks the geofences every 5 minutes
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -131,28 +139,32 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
      * How are we doing regarding the geofences?
      */
     private void checkGeofences() {
-        if (lastlocation != null) {
-            if (!GeofenceUtils.getLabel(this, lastlocation).equalsIgnoreCase("Somewhere")) {
-                if (!GEOFENCED) {
-                    Intent geofenced = new Intent(Geofences.ACTION_AWARE_PLUGIN_FUSED_ENTER_GEOFENCE);
-                    geofenced.putExtra(Geofences.EXTRA_DATA, lastlocation);
+        Location currentLocation = new Location("Current location");
+        Cursor data = getContentResolver().query(Locations_Data.CONTENT_URI, null, null, null, Locations_Data.TIMESTAMP + " DESC LIMIT 1");
+        if (data != null && data.moveToFirst()) {
+            currentLocation.setLatitude(data.getDouble(data.getColumnIndex(Locations_Data.LATITUDE)));
+            currentLocation.setLongitude(data.getDouble(data.getColumnIndex(Locations_Data.LONGITUDE)));
+            currentLocation.setAccuracy(data.getFloat(data.getColumnIndex(Locations_Data.ACCURACY)));
+        }
+        if (data!= null && ! data.isClosed()) data.close();
+
+        Cursor geofences = GeofenceUtils.getLabels(this, null);
+        if (geofences != null && geofences.moveToFirst()) {
+            do {
+                Location labelLocation = new Location("Label location");
+                labelLocation.setLatitude(geofences.getDouble(geofences.getColumnIndex(Provider.Geofences.GEO_LAT)));
+                labelLocation.setLongitude(geofences.getDouble(geofences.getColumnIndex(Provider.Geofences.GEO_LONG)));
+
+                if (GeofenceUtils.getDistance(currentLocation, labelLocation) <= 0.05) {
+                    Intent geofenced = new Intent(Geofences.ACTION_AWARE_PLUGIN_FUSED_GEOFENCE);
+                    geofenced.putExtra(Geofences.EXTRA_DATA, geofences.getString(geofences.getColumnIndex(Provider.Geofences.GEO_LABEL)));
                     sendBroadcast(geofenced);
 
                     if (Aware.DEBUG)
-                        Log.d(Aware.TAG, "Entered geofence: " + lastlocation.toString() + " Label:" + GeofenceUtils.getLabel(this, lastlocation));
+                        Log.d(Aware.TAG, "Geofence detected: " + labelLocation.toString() + " Label:" + geofences.getString(geofences.getColumnIndex(Provider.Geofences.GEO_LABEL)));
                 }
-                GEOFENCED = true;
-            } else {
-                if (GEOFENCED) {
-                    Intent notgeofenced = new Intent(Geofences.ACTION_AWARE_PLUGIN_FUSED_EXIT_GEOFENCE);
-                    notgeofenced.putExtra(Geofences.EXTRA_DATA, lastlocation);
-                    sendBroadcast(notgeofenced);
-
-                    if (Aware.DEBUG)
-                        Log.d(Aware.TAG, "Exited geofence: " + lastlocation.toString() + " Label:" + GeofenceUtils.getLabel(this, lastlocation));
-                }
-                GEOFENCED = false;
-            }
+            } while (geofences.moveToNext());
+            geofences.close();
         }
     }
 
@@ -214,6 +226,7 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
             mLocationRequest.setPriority(Integer.parseInt(Aware.getSetting(this, Settings.ACCURACY_GOOGLE_FUSED_LOCATION)));
             mLocationRequest.setInterval(Long.parseLong(Aware.getSetting(this, Settings.FREQUENCY_GOOGLE_FUSED_LOCATION)) * 1000);
             mLocationRequest.setFastestInterval(Long.parseLong(Aware.getSetting(this, Settings.MAX_FREQUENCY_GOOGLE_FUSED_LOCATION)) * 1000);
+            mLocationRequest.setMaxWaitTime(20 * 1000); //wait 20 seconds for GPS, fallback to network-wifi if unable to get a fix
 
             if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
                     && ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
