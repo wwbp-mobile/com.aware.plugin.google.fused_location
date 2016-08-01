@@ -72,7 +72,7 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
                     currentLocation.setLongitude(data.getDouble(data.getColumnIndex(Locations_Data.LONGITUDE)));
                     currentLocation.setAccuracy(data.getFloat(data.getColumnIndex(Locations_Data.ACCURACY)));
                 }
-                if (data!= null && ! data.isClosed()) data.close();
+                if (data != null && !data.isClosed()) data.close();
 
                 Intent context = new Intent(ACTION_AWARE_LOCATIONS);
                 context.putExtra(Plugin.EXTRA_DATA, currentLocation);
@@ -86,14 +86,9 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
         REQUIRED_PERMISSIONS.add(Manifest.permission.ACCESS_COARSE_LOCATION);
         REQUIRED_PERMISSIONS.add(Manifest.permission.ACCESS_FINE_LOCATION);
 
-        Intent permissions = new Intent(this, PermissionsHandler.class);
-        permissions.putExtra(PermissionsHandler.EXTRA_REQUIRED_PERMISSIONS, REQUIRED_PERMISSIONS);
-        permissions.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(permissions);
-
         if (!is_google_services_available()) {
-            Log.e(TAG, "Google Services fused location is not available on this device.");
-            stopSelf();
+            if (DEBUG)
+                Log.e(TAG, "Google Services fused location is not available on this device.");
         } else {
             mLocationClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
@@ -113,25 +108,46 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+        boolean permissions_ok = true;
+        for (String p : REQUIRED_PERMISSIONS) {
+            if (ContextCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED) {
+                permissions_ok = false;
+                break;
+            }
+        }
+
+        if (permissions_ok) {
+
+            DEBUG = Aware.getSetting(this, Aware_Preferences.DEBUG_FLAG).equals("true");
+
+            Aware.setSetting(this, Settings.STATUS_GOOGLE_FUSED_LOCATION, true);
+            if (Aware.getSetting(this, Settings.FREQUENCY_GOOGLE_FUSED_LOCATION).length() == 0)
+                Aware.setSetting(this, Settings.FREQUENCY_GOOGLE_FUSED_LOCATION, 180);
+
+            if (Aware.getSetting(this, Settings.MAX_FREQUENCY_GOOGLE_FUSED_LOCATION).length() == 0)
+                Aware.setSetting(this, Settings.MAX_FREQUENCY_GOOGLE_FUSED_LOCATION, 1);
+
+            if (Aware.getSetting(this, Settings.ACCURACY_GOOGLE_FUSED_LOCATION).length() == 0)
+                Aware.setSetting(this, Settings.ACCURACY_GOOGLE_FUSED_LOCATION, LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+
+            if (Aware.getSetting(this, Settings.FALLBACK_LOCATION_TIMEOUT).length() == 0)
+                Aware.setSetting(this, Settings.FALLBACK_LOCATION_TIMEOUT, 20);
+
+            if (Aware.getSetting(this, Settings.LOCATION_SENSITIVITY).length() == 0)
+                Aware.setSetting(this, Settings.LOCATION_SENSITIVITY, 0);
+
             if (mLocationClient != null && !mLocationClient.isConnected())
                 mLocationClient.connect();
-            if (mLocationClient != null && mLocationClient.isConnected()
-                    && (
-                    mLocationRequest.getPriority() != Integer.parseInt(Aware.getSetting(this, Settings.ACCURACY_GOOGLE_FUSED_LOCATION))
-                            || mLocationRequest.getFastestInterval() != Long.parseLong(Aware.getSetting(this, Settings.MAX_FREQUENCY_GOOGLE_FUSED_LOCATION)) * 1000
-                            || mLocationRequest.getInterval() != Long.parseLong(Aware.getSetting(this, Settings.FREQUENCY_GOOGLE_FUSED_LOCATION)) * 1000)
-                    ) {
-                mLocationRequest.setPriority(Integer.parseInt(Aware.getSetting(this, Settings.ACCURACY_GOOGLE_FUSED_LOCATION)));
-                mLocationRequest.setInterval(Long.parseLong(Aware.getSetting(this, Settings.FREQUENCY_GOOGLE_FUSED_LOCATION)) * 1000);
-                mLocationRequest.setFastestInterval(Long.parseLong(Aware.getSetting(this, Settings.MAX_FREQUENCY_GOOGLE_FUSED_LOCATION)) * 1000);
-
-                LocationServices.FusedLocationApi.removeLocationUpdates(mLocationClient, pIntent); //remove old
-                LocationServices.FusedLocationApi.requestLocationUpdates(mLocationClient, mLocationRequest, pIntent); //add new
-            }
 
             checkGeofences(); //checks the geofences every 5 minutes
+
+        } else {
+            Intent permissions = new Intent(this, PermissionsHandler.class);
+            permissions.putExtra(PermissionsHandler.EXTRA_REQUIRED_PERMISSIONS, REQUIRED_PERMISSIONS);
+            permissions.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(permissions);
         }
+
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -146,7 +162,7 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
             currentLocation.setLongitude(data.getDouble(data.getColumnIndex(Locations_Data.LONGITUDE)));
             currentLocation.setAccuracy(data.getFloat(data.getColumnIndex(Locations_Data.ACCURACY)));
         }
-        if (data!= null && ! data.isClosed()) data.close();
+        if (data != null && !data.isClosed()) data.close();
 
         Cursor geofences = GeofenceUtils.getLabels(this, null);
         if (geofences != null && geofences.moveToFirst()) {
@@ -155,7 +171,7 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
                 labelLocation.setLatitude(geofences.getDouble(geofences.getColumnIndex(Provider.Geofences.GEO_LAT)));
                 labelLocation.setLongitude(geofences.getDouble(geofences.getColumnIndex(Provider.Geofences.GEO_LONG)));
 
-                if (GeofenceUtils.getDistance(currentLocation, labelLocation) <= 0.05) {
+                if (GeofenceUtils.getDistance(currentLocation, labelLocation) <= 0.05) { //50 meters
                     Intent geofenced = new Intent(Geofences.ACTION_AWARE_PLUGIN_FUSED_GEOFENCE);
                     geofenced.putExtra(Geofences.EXTRA_DATA, geofences.getString(geofences.getColumnIndex(Provider.Geofences.GEO_LABEL)));
                     sendBroadcast(geofenced);
@@ -182,6 +198,7 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
         stopService(geofences);
 
         Aware.stopPlugin(this, PACKAGE_NAME);
+        Aware.stopAWARE();
     }
 
     private boolean is_google_services_available() {
@@ -198,41 +215,19 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
 
     @Override
     public void onConnected(Bundle arg0) {
-        Log.i(TAG, "Connected to Google's Location API");
+        if (DEBUG)
+            Log.i(TAG, "Connected to Google's Location API");
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+        mLocationRequest.setPriority(Integer.parseInt(Aware.getSetting(this, Settings.ACCURACY_GOOGLE_FUSED_LOCATION)));
+        mLocationRequest.setInterval(Long.parseLong(Aware.getSetting(this, Settings.FREQUENCY_GOOGLE_FUSED_LOCATION)) * 1000);
+        mLocationRequest.setFastestInterval(Long.parseLong(Aware.getSetting(this, Settings.MAX_FREQUENCY_GOOGLE_FUSED_LOCATION)) * 1000);
+        mLocationRequest.setMaxWaitTime(Long.parseLong(Aware.getSetting(this, Settings.FALLBACK_LOCATION_TIMEOUT)) * 1000); //wait X seconds for GPS
+        mLocationRequest.setSmallestDisplacement(Float.parseFloat(Aware.getSetting(this, Settings.LOCATION_SENSITIVITY)));
 
-            DEBUG = Aware.getSetting(this, Aware_Preferences.DEBUG_FLAG).equals("true");
-
-            Aware.setSetting(this, Settings.STATUS_GOOGLE_FUSED_LOCATION, true);
-            if (Aware.getSetting(this, Settings.FREQUENCY_GOOGLE_FUSED_LOCATION).length() == 0) {
-                Aware.setSetting(this, Settings.FREQUENCY_GOOGLE_FUSED_LOCATION, Settings.update_interval);
-            } else {
-                Aware.setSetting(this, Settings.FREQUENCY_GOOGLE_FUSED_LOCATION, Aware.getSetting(this, Settings.FREQUENCY_GOOGLE_FUSED_LOCATION));
-            }
-
-            if (Aware.getSetting(this, Settings.MAX_FREQUENCY_GOOGLE_FUSED_LOCATION).length() == 0) {
-                Aware.setSetting(this, Settings.MAX_FREQUENCY_GOOGLE_FUSED_LOCATION, Settings.max_update_interval);
-            } else {
-                Aware.setSetting(this, Settings.MAX_FREQUENCY_GOOGLE_FUSED_LOCATION, Aware.getSetting(this, Settings.MAX_FREQUENCY_GOOGLE_FUSED_LOCATION));
-            }
-
-            if (Aware.getSetting(this, Settings.ACCURACY_GOOGLE_FUSED_LOCATION).length() == 0) {
-                Aware.setSetting(this, Settings.ACCURACY_GOOGLE_FUSED_LOCATION, Settings.location_accuracy);
-            } else {
-                Aware.setSetting(this, Settings.ACCURACY_GOOGLE_FUSED_LOCATION, Aware.getSetting(this, Settings.ACCURACY_GOOGLE_FUSED_LOCATION));
-            }
-
-            mLocationRequest.setPriority(Integer.parseInt(Aware.getSetting(this, Settings.ACCURACY_GOOGLE_FUSED_LOCATION)));
-            mLocationRequest.setInterval(Long.parseLong(Aware.getSetting(this, Settings.FREQUENCY_GOOGLE_FUSED_LOCATION)) * 1000);
-            mLocationRequest.setFastestInterval(Long.parseLong(Aware.getSetting(this, Settings.MAX_FREQUENCY_GOOGLE_FUSED_LOCATION)) * 1000);
-            mLocationRequest.setMaxWaitTime(20 * 1000); //wait 20 seconds for GPS, fallback to network-wifi if unable to get a fix
-
-            if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                    && ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-                LocationServices.FusedLocationApi.requestLocationUpdates(mLocationClient, mLocationRequest, pIntent);
-            }
+        try {
+            LocationServices.FusedLocationApi.requestLocationUpdates(mLocationClient, mLocationRequest, pIntent);
+        } catch (SecurityException e) {
+            e.printStackTrace();
         }
     }
 

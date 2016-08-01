@@ -110,9 +110,12 @@ public class GeofenceMap extends FragmentActivity implements OnMapReadyCallback 
 
         mMap.setBuildingsEnabled(true);
         mMap.setIndoorEnabled(true);
+        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        try {
             mMap.setMyLocationEnabled(true);
+        } catch (SecurityException e) {
+            e.printStackTrace();
         }
 
         Location user_location = null;

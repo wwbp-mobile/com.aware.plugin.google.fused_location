@@ -12,7 +12,8 @@
         android:layout_alignParentLeft="false"
         android:hint="Name this location"
         android:textColorHint="#CCC"
-        android:textColor="#FFF" />
+        android:textColor="#FFF"
+        android:lines="1" />
 
     <SeekBar
         android:layout_width="match_parent"

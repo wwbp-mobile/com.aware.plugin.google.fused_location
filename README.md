@@ -1,7 +1,7 @@
 AWARE Plugin: Google Fused Location
 ===================================
 
-Google's Fused Locations API. This plugin provides the user's current location in an energy efficient way.
+This plugin uses Google's Fused Locations API to provide the user's current location in an energy efficient way. It also allows the user to define geo-tagged areas.
 
 [ ![Download](https://api.bintray.com/packages/denzilferreira/com.awareframework/com.aware.plugin.google.fused_location/images/download.svg) ](https://bintray.com/denzilferreira/com.awareframework/com.aware.plugin.google.fused_location/_latestVersion)
 
