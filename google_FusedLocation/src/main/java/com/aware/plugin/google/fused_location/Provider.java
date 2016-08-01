@@ -55,8 +55,7 @@ public class Provider extends ContentProvider {
                     Geofences.GEO_LABEL + " text default ''," +
                     Geofences.GEO_LAT + " real default null," +
                     Geofences.GEO_LONG + " real default null," +
-                    Geofences.GEO_RADIUS + " real default null," +
-                    "UNIQUE (" + Geofences.DEVICE_ID + "," + Geofences.TIMESTAMP + ")";
+                    Geofences.GEO_RADIUS + " real default null";
 
     public static final String[] TABLES_FIELDS = {
             DB_TBL_GEOFENCES_FIELDS
