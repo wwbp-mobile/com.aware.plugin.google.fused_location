@@ -168,16 +168,17 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
         Cursor geofences = GeofenceUtils.getLabels(this, null); //get list of defined geofences
         if (geofences != null && geofences.moveToFirst()) {
             do {
-                Location labelLocation = new Location("Label location");
-                labelLocation.setLatitude(geofences.getDouble(geofences.getColumnIndex(Provider.Geofences.GEO_LAT)));
-                labelLocation.setLongitude(geofences.getDouble(geofences.getColumnIndex(Provider.Geofences.GEO_LONG)));
+                Location geofenceLocation = new Location("Geofence location");
+                geofenceLocation.setLatitude(geofences.getDouble(geofences.getColumnIndex(Provider.Geofences.GEO_LAT)));
+                geofenceLocation.setLongitude(geofences.getDouble(geofences.getColumnIndex(Provider.Geofences.GEO_LONG)));
 
-                //Current location is within a geofence
-                if (GeofenceUtils.getDistance(currentLocation, labelLocation) <= 0.05) { //50 meters
-                    if (lastGeofence == null) { //first time entered geofence
+                //Current location is within this geofence
+                if (GeofenceUtils.getDistance(currentLocation, geofenceLocation) <= 0.05) { //50 meters (0.05 km)
+                    //First time in this geofence
+                    if (lastGeofence == null) {
                         Intent geofenced = new Intent(Geofences.ACTION_AWARE_PLUGIN_FUSED_ENTERED_GEOFENCE);
                         geofenced.putExtra(Geofences.EXTRA_LABEL, geofences.getString(geofences.getColumnIndex(Provider.Geofences.GEO_LABEL)));
-                        geofenced.putExtra(Geofences.EXTRA_LOCATION, labelLocation);
+                        geofenced.putExtra(Geofences.EXTRA_LOCATION, geofenceLocation);
                         geofenced.putExtra(Geofences.EXTRA_RADIUS, geofences.getDouble(geofences.getColumnIndex(Provider.Geofences.GEO_RADIUS)));
                         sendBroadcast(geofenced);
 
@@ -187,7 +188,7 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
                         entered.put(Provider.Geofences_Data.GEO_LABEL, geofences.getString(geofences.getColumnIndex(Provider.Geofences.GEO_LABEL)));
                         entered.put(Provider.Geofences_Data.GEO_LAT, geofences.getDouble(geofences.getColumnIndex(Provider.Geofences.GEO_LAT)));
                         entered.put(Provider.Geofences_Data.GEO_LONG, geofences.getString(geofences.getColumnIndex(Provider.Geofences.GEO_LONG)));
-                        entered.put(Provider.Geofences_Data.DISTANCE, GeofenceUtils.getDistance(currentLocation, labelLocation));
+                        entered.put(Provider.Geofences_Data.DISTANCE, GeofenceUtils.getDistance(currentLocation, geofenceLocation));
                         entered.put(Provider.Geofences_Data.STATUS, Geofences.STATUS_ENTER);
 
                         if (Aware.DEBUG)
@@ -195,35 +196,42 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
 
                         getContentResolver().insert(Provider.Geofences_Data.CONTENT_URI, entered);
 
-                        lastGeofence = labelLocation;
-                    }
-                } else { //Were we inside a geofence and now we are not?
-                    if (lastGeofence != null && GeofenceUtils.getDistance(currentLocation, lastGeofence) > 0.05) { //exited geofence
-                        Intent geofenced = new Intent(Geofences.ACTION_AWARE_PLUGIN_FUSED_EXITED_GEOFENCE);
-                        geofenced.putExtra(Geofences.EXTRA_LABEL, geofences.getString(geofences.getColumnIndex(Provider.Geofences.GEO_LABEL)));
-                        geofenced.putExtra(Geofences.EXTRA_LOCATION, labelLocation);
-                        geofenced.putExtra(Geofences.EXTRA_RADIUS, geofences.getDouble(geofences.getColumnIndex(Provider.Geofences.GEO_RADIUS)));
-                        sendBroadcast(geofenced);
-
-                        ContentValues exited = new ContentValues();
-                        exited.put(Provider.Geofences_Data.TIMESTAMP, System.currentTimeMillis());
-                        exited.put(Provider.Geofences_Data.DEVICE_ID, Aware.getSetting(this, Aware_Preferences.DEVICE_ID));
-                        exited.put(Provider.Geofences_Data.GEO_LABEL, geofences.getString(geofences.getColumnIndex(Provider.Geofences.GEO_LABEL)));
-                        exited.put(Provider.Geofences_Data.GEO_LAT, geofences.getDouble(geofences.getColumnIndex(Provider.Geofences.GEO_LAT)));
-                        exited.put(Provider.Geofences_Data.GEO_LONG, geofences.getString(geofences.getColumnIndex(Provider.Geofences.GEO_LONG)));
-                        exited.put(Provider.Geofences_Data.DISTANCE, GeofenceUtils.getDistance(currentLocation, labelLocation));
-                        exited.put(Provider.Geofences_Data.STATUS, Geofences.STATUS_EXIT);
-
-                        getContentResolver().insert(Provider.Geofences_Data.CONTENT_URI, exited);
-
-                        if (Aware.DEBUG)
-                            Log.d(Aware.TAG, "Geofence exit:\n"+ exited.toString());
-
-                        lastGeofence = null;
+                        lastGeofence = geofenceLocation;
+                        break;
                     }
                 }
             } while (geofences.moveToNext());
             geofences.close();
+
+            if (lastGeofence != null && GeofenceUtils.getDistance(currentLocation, lastGeofence) > 0.05) { //exited last geofence
+
+                String label = GeofenceUtils.getLabel(this, lastGeofence);
+                long radius = GeofenceUtils.getLabelLocationRadius(this, GeofenceUtils.getLabel(this, lastGeofence));
+
+                Intent geofenced = new Intent(Geofences.ACTION_AWARE_PLUGIN_FUSED_EXITED_GEOFENCE);
+                geofenced.putExtra(Geofences.EXTRA_LABEL, label);
+                geofenced.putExtra(Geofences.EXTRA_LOCATION, lastGeofence);
+                geofenced.putExtra(Geofences.EXTRA_RADIUS, radius);
+                sendBroadcast(geofenced);
+
+                ContentValues exited = new ContentValues();
+                exited.put(Provider.Geofences_Data.TIMESTAMP, System.currentTimeMillis());
+                exited.put(Provider.Geofences_Data.DEVICE_ID, Aware.getSetting(this, Aware_Preferences.DEVICE_ID));
+                exited.put(Provider.Geofences_Data.GEO_LABEL, label);
+                exited.put(Provider.Geofences_Data.GEO_LAT, lastGeofence.getLatitude());
+                exited.put(Provider.Geofences_Data.GEO_LONG, lastGeofence.getLongitude());
+                exited.put(Provider.Geofences_Data.DISTANCE, GeofenceUtils.getDistance(currentLocation, lastGeofence));
+                exited.put(Provider.Geofences_Data.STATUS, Geofences.STATUS_EXIT);
+
+                getContentResolver().insert(Provider.Geofences_Data.CONTENT_URI, exited);
+
+                if (Aware.DEBUG)
+                    Log.d(Aware.TAG, "Geofence exit:\n"+ exited.toString());
+
+                lastGeofence = null;
+            }
+        } else {
+            lastGeofence = null;
         }
     }
 

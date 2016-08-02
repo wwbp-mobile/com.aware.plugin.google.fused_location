@@ -63,7 +63,7 @@ timestamp | REAL | unix timestamp in milliseconds of sample
 device_id | TEXT | AWARE device ID
 geofence_label | TEXT | user-defined label for this geofence
 double_latitude | REAL | the location’s latitude, in degrees
-double_longitude	| REAL | the location’s longitude, in degrees
+double_longitude | REAL | the location’s longitude, in degrees
 double_radius | REAL |	the geofence radius (in meters)
 
 ##  Geofences Data
@@ -76,6 +76,6 @@ timestamp | REAL | unix timestamp in milliseconds of sample
 device_id | TEXT | AWARE device ID
 geofence_label | TEXT | user-defined label for this geofence
 double_latitude | REAL | the location’s latitude, in degrees
-double_longitude	| REAL | the location’s longitude, in degrees
-double_distance | REAL |	distance between current location and geofence center (in meters)
-status  | INTEGER   | 1 = entered, 0 = exited geofence
+double_longitude | REAL | the location’s longitude, in degrees
+double_distance | REAL | distance between current location and geofence center (in kilometers)
+status | INTEGER | 1 = entered, 0 = exited geofence
