@@ -28,14 +28,13 @@ public class GeofenceUtils {
                 Location labelLocation = new Location("Label location");
                 labelLocation.setLatitude(geofences.getDouble(geofences.getColumnIndex(Provider.Geofences.GEO_LAT)));
                 labelLocation.setLongitude(geofences.getDouble(geofences.getColumnIndex(Provider.Geofences.GEO_LONG)));
-
                 if (GeofenceUtils.getDistance(currentLocation, labelLocation) <= 0.05) {
                     label = geofences.getString(geofences.getColumnIndex(Provider.Geofences.GEO_LABEL));
                 }
             } while (geofences.moveToNext());
             geofences.close();
         }
-        return ((label.length()>0) ? label : "Somewhere");
+        return ((label.length()>0) ? label : "");
     }
 
     /**
@@ -99,30 +98,19 @@ public class GeofenceUtils {
             data.put(Provider.Geofences.GEO_LAT, currentLocation.getLatitude());
             data.put(Provider.Geofences.GEO_LONG, currentLocation.getLongitude());
             data.put(Provider.Geofences.GEO_RADIUS, radius);
-
             context.getContentResolver().insert(Provider.Geofences.CONTENT_URI, data);
-
-            Intent newLabel = new Intent(Geofences.ACTION_AWARE_PLUGIN_FUSED_GEOFENCE);
-            newLabel.putExtra(Geofences.EXTRA_DATA, data);
-            context.sendBroadcast(newLabel);
         } else {
             ContentValues data = new ContentValues();
             data.put(Provider.Geofences.TIMESTAMP, System.currentTimeMillis());
             data.put(Provider.Geofences.GEO_LAT, currentLocation.getLatitude());
             data.put(Provider.Geofences.GEO_LONG, currentLocation.getLongitude());
             data.put(Provider.Geofences.GEO_RADIUS, radius);
-
             context.getContentResolver().update(Provider.Geofences.CONTENT_URI, data, Provider.Geofences.GEO_LABEL + " LIKE '" + label + "'", null);
-
-            Intent newLabel = new Intent(Geofences.ACTION_AWARE_PLUGIN_FUSED_GEOFENCE);
-            newLabel.putExtra(Geofences.EXTRA_DATA, data);
-            context.sendBroadcast(newLabel);
         }
     }
 
     /**
      * Get current defined geofence labels
-     *
      * @param context
      * @return
      */
@@ -135,7 +123,6 @@ public class GeofenceUtils {
 
     public static boolean exists(Context context, String name) {
         boolean exists = false;
-
         Cursor labels = context.getContentResolver().query(Provider.Geofences.CONTENT_URI, null,
                 Provider.Geofences.GEO_LABEL + " LIKE '" + name + "'", null, null);
         if (labels != null && labels.getCount() > 0) exists = true;

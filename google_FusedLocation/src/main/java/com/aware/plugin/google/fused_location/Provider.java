@@ -25,16 +25,18 @@ import java.util.HashMap;
 public class Provider extends ContentProvider {
 
     public static String AUTHORITY = "com.aware.plugin.google.fused_location.provider.geofences";
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
 
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
     public static final String DATABASE_NAME = "fused_geofences.db";
 
     public static final String DB_TBL_GEOFENCES = "fused_geofences";
+    public static final String DB_TBL_GEOFENCES_DATA = "fused_geofences_data";
 
     public static final String[] DATABASE_TABLES = {
-            DB_TBL_GEOFENCES
+            DB_TBL_GEOFENCES,
+            DB_TBL_GEOFENCES_DATA
     };
 
     public static final class Geofences implements AWAREColumns {
@@ -48,6 +50,18 @@ public class Provider extends ContentProvider {
         public static final String GEO_RADIUS = "double_radius";
     }
 
+    public static final class Geofences_Data implements AWAREColumns {
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(Provider.CONTENT_URI, DB_TBL_GEOFENCES_DATA);
+        public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd.google.fused_location.geofences.data";
+        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd.google.fused_location.geofences.data";
+
+        public static final String GEO_LABEL = "geofence_label";
+        public static final String GEO_LAT = "double_latitude";
+        public static final String GEO_LONG = "double_longitude";
+        public static final String DISTANCE = "double_distance";
+        public static final String STATUS = "status";
+    }
+
     private static final String DB_TBL_GEOFENCES_FIELDS =
             Geofences._ID + " integer primary key autoincrement," +
                     Geofences.TIMESTAMP + " real default 0," +
@@ -57,8 +71,20 @@ public class Provider extends ContentProvider {
                     Geofences.GEO_LONG + " real default null," +
                     Geofences.GEO_RADIUS + " real default null";
 
+    private static final String DB_TBL_GEOFENCES_DATA_FIELDS =
+            Geofences_Data._ID + " integer primary key autoincrement," +
+                    Geofences_Data.TIMESTAMP + " real default 0," +
+                    Geofences_Data.DEVICE_ID + " text default ''," +
+                    Geofences_Data.GEO_LABEL + " text default ''," +
+                    Geofences_Data.GEO_LAT + " real default null," +
+                    Geofences_Data.GEO_LONG + " real default null," +
+                    Geofences_Data.DISTANCE + " real default null," +
+                    Geofences_Data.STATUS + " integer default null"
+            ;
+
     public static final String[] TABLES_FIELDS = {
-            DB_TBL_GEOFENCES_FIELDS
+            DB_TBL_GEOFENCES_FIELDS,
+            DB_TBL_GEOFENCES_DATA_FIELDS
     };
 
     public interface AWAREColumns extends BaseColumns {
@@ -71,10 +97,12 @@ public class Provider extends ContentProvider {
     private static DatabaseHelper databaseHelper;
     private static SQLiteDatabase database;
 
-    private static HashMap<String, String> geoHash;
+    private static HashMap<String, String> geoHash, geoDataHash;
 
     private static final int GEO_DIR = 1;
     private static final int GEO_ITEM = 2;
+    private static final int GEO_DATA_DIR = 3;
+    private static final int GEO_DATA_ITEM = 4;
 
     private boolean initializeDB() {
         if (databaseHelper == null) {
@@ -94,6 +122,8 @@ public class Provider extends ContentProvider {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         sUriMatcher.addURI(AUTHORITY, DATABASE_TABLES[0], GEO_DIR);
         sUriMatcher.addURI(AUTHORITY, DATABASE_TABLES[0] + "/#", GEO_ITEM);
+        sUriMatcher.addURI(AUTHORITY, DATABASE_TABLES[1], GEO_DATA_DIR);
+        sUriMatcher.addURI(AUTHORITY, DATABASE_TABLES[1] + "/#", GEO_DATA_ITEM);
 
         geoHash = new HashMap<>();
         geoHash.put(Geofences._ID, Geofences._ID);
@@ -103,6 +133,16 @@ public class Provider extends ContentProvider {
         geoHash.put(Geofences.GEO_LAT, Geofences.GEO_LAT);
         geoHash.put(Geofences.GEO_LONG, Geofences.GEO_LONG);
         geoHash.put(Geofences.GEO_RADIUS, Geofences.GEO_RADIUS);
+
+        geoDataHash = new HashMap<>();
+        geoDataHash.put(Geofences_Data._ID, Geofences_Data._ID);
+        geoDataHash.put(Geofences_Data.TIMESTAMP, Geofences_Data.TIMESTAMP);
+        geoDataHash.put(Geofences_Data.DEVICE_ID, Geofences_Data.DEVICE_ID);
+        geoDataHash.put(Geofences_Data.GEO_LABEL, Geofences_Data.GEO_LABEL);
+        geoDataHash.put(Geofences_Data.GEO_LAT, Geofences_Data.GEO_LAT);
+        geoDataHash.put(Geofences_Data.GEO_LONG, Geofences_Data.GEO_LONG);
+        geoDataHash.put(Geofences_Data.DISTANCE, Geofences_Data.DISTANCE);
+        geoDataHash.put(Geofences_Data.STATUS, Geofences_Data.STATUS);
 
         return true;
     }
@@ -120,6 +160,10 @@ public class Provider extends ContentProvider {
             case GEO_DIR:
                 qb.setTables(DATABASE_TABLES[0]);
                 qb.setProjectionMap(geoHash);
+                break;
+            case GEO_DATA_DIR:
+                qb.setTables(DATABASE_TABLES[1]);
+                qb.setProjectionMap(geoDataHash);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
@@ -144,6 +188,10 @@ public class Provider extends ContentProvider {
                 return Geofences.CONTENT_TYPE;
             case GEO_ITEM:
                 return Geofences.CONTENT_ITEM_TYPE;
+            case GEO_DATA_DIR:
+                return Geofences_Data.CONTENT_TYPE;
+            case GEO_DATA_ITEM:
+                return Geofences_Data.CONTENT_ITEM_TYPE;
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
@@ -168,6 +216,14 @@ public class Provider extends ContentProvider {
                     return dataUri;
                 }
                 throw new SQLException("Failed to insert row into " + uri);
+            case GEO_DATA_DIR:
+                _id = database.insert(DATABASE_TABLES[1], Geofences_Data.DEVICE_ID, values);
+                if (_id > 0) {
+                    Uri dataUri = ContentUris.withAppendedId(Geofences_Data.CONTENT_URI, _id);
+                    getContext().getContentResolver().notifyChange(dataUri, null);
+                    return dataUri;
+                }
+                throw new SQLException("Failed to insert row into " + uri);
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
@@ -184,6 +240,9 @@ public class Provider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
             case GEO_DIR:
                 count = database.delete(DATABASE_TABLES[0], selection, selectionArgs);
+                break;
+            case GEO_DATA_DIR:
+                count = database.delete(DATABASE_TABLES[1], selection, selectionArgs);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
@@ -203,6 +262,9 @@ public class Provider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
             case GEO_DIR:
                 count = database.update(DATABASE_TABLES[0], values, selection, selectionArgs);
+                break;
+            case GEO_DATA_DIR:
+                count = database.update(DATABASE_TABLES[1], values, selection, selectionArgs);
                 break;
             default:
                 database.close();

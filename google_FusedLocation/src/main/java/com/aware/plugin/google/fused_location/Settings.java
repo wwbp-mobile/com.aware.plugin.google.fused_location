@@ -78,12 +78,12 @@ public class Settings extends PreferenceActivity implements SharedPreferences.On
 
         update_frequency = (EditTextPreference) findPreference(FREQUENCY_GOOGLE_FUSED_LOCATION);
         if (Aware.getSetting(this, FREQUENCY_GOOGLE_FUSED_LOCATION).length() == 0)
-            Aware.setSetting(this, FREQUENCY_GOOGLE_FUSED_LOCATION, 180);
+            Aware.setSetting(this, FREQUENCY_GOOGLE_FUSED_LOCATION, 300);
         update_frequency.setSummary("Every " + Aware.getSetting(this, FREQUENCY_GOOGLE_FUSED_LOCATION) + " second(s)");
 
         max_update_frequency = (EditTextPreference) findPreference(MAX_FREQUENCY_GOOGLE_FUSED_LOCATION);
         if (Aware.getSetting(this, MAX_FREQUENCY_GOOGLE_FUSED_LOCATION).length() == 0)
-            Aware.setSetting(this, MAX_FREQUENCY_GOOGLE_FUSED_LOCATION, 1);
+            Aware.setSetting(this, MAX_FREQUENCY_GOOGLE_FUSED_LOCATION, 60);
         max_update_frequency.setSummary("Every " + Aware.getSetting(this, MAX_FREQUENCY_GOOGLE_FUSED_LOCATION) + " second(s)");
 
         fallback_timeout = (EditTextPreference) findPreference(FALLBACK_LOCATION_TIMEOUT);
@@ -93,7 +93,7 @@ public class Settings extends PreferenceActivity implements SharedPreferences.On
 
         location_sensitivity = (EditTextPreference) findPreference(LOCATION_SENSITIVITY);
         if (Aware.getSetting(this, LOCATION_SENSITIVITY).length() == 0)
-            Aware.setSetting(this, LOCATION_SENSITIVITY, 20);
+            Aware.setSetting(this, LOCATION_SENSITIVITY, 5);
         location_sensitivity.setSummary("More than " + Aware.getSetting(this, LOCATION_SENSITIVITY) + " meter(s)");
 
         accuracy = (ListPreference) findPreference(ACCURACY_GOOGLE_FUSED_LOCATION);
@@ -106,11 +106,11 @@ public class Settings extends PreferenceActivity implements SharedPreferences.On
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Preference preference = findPreference(key);
         if (preference.getKey().equals(FREQUENCY_GOOGLE_FUSED_LOCATION)) {
-            Aware.setSetting(getApplicationContext(), key, sharedPreferences.getString(key, "180"));
+            Aware.setSetting(getApplicationContext(), key, sharedPreferences.getString(key, "300"));
             update_frequency.setSummary("Every " + Aware.getSetting(getApplicationContext(), FREQUENCY_GOOGLE_FUSED_LOCATION) + " second(s)");
         }
         if (preference.getKey().equals(MAX_FREQUENCY_GOOGLE_FUSED_LOCATION)) {
-            Aware.setSetting(getApplicationContext(), key, sharedPreferences.getString(key, "1"));
+            Aware.setSetting(getApplicationContext(), key, sharedPreferences.getString(key, "60"));
             max_update_frequency.setSummary("Every " + Aware.getSetting(getApplicationContext(), MAX_FREQUENCY_GOOGLE_FUSED_LOCATION) + " second(s)");
         }
         if (preference.getKey().equals(FALLBACK_LOCATION_TIMEOUT)) {
@@ -118,7 +118,7 @@ public class Settings extends PreferenceActivity implements SharedPreferences.On
             fallback_timeout.setSummary("Wait " + Aware.getSetting(getApplicationContext(), FALLBACK_LOCATION_TIMEOUT) + " second(s)");
         }
         if (preference.getKey().equals(LOCATION_SENSITIVITY)) {
-            Aware.setSetting(getApplicationContext(), key, sharedPreferences.getString(key, "0"));
+            Aware.setSetting(getApplicationContext(), key, sharedPreferences.getString(key, "5"));
             location_sensitivity.setSummary("More than " + Aware.getSetting(getApplicationContext(), LOCATION_SENSITIVITY) + " meter(s)");
         }
         if (preference.getKey().equals(ACCURACY_GOOGLE_FUSED_LOCATION)) {

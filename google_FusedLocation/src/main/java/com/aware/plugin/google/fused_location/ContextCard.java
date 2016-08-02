@@ -76,7 +76,7 @@ public class ContextCard implements IContextCard {
 
                 Intent locationGeofencer = new Intent(context, GeofenceMap.class);
                 locationGeofencer.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                if (!GeofenceUtils.getLabel(context, user_location).equalsIgnoreCase("Somewhere")) {
+                if (GeofenceUtils.getLabel(context, user_location).length()>0) {
                     locationGeofencer.putExtra(GeofenceMap.EXTRA_LABEL, GeofenceUtils.getLabel(context, user_location));
                 }
                 context.startActivity(locationGeofencer);
