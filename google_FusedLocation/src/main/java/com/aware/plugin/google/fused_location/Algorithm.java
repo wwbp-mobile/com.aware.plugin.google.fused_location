@@ -46,7 +46,8 @@ public class Algorithm extends IntentService {
             
             if( DEBUG ) Log.d(Plugin.TAG, "Fused location:" + rowData.toString());
 
-            Plugin.contextProducer.onContext();
+            if (Plugin.contextProducer != null)
+                Plugin.contextProducer.onContext();
         }
     }
 }

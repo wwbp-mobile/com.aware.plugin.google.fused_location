@@ -11,8 +11,13 @@
         <service
             android:name="com.aware.plugin.google.fused_location.Plugin"
             android:exported="true" />
+
         <service
             android:name="com.aware.plugin.google.fused_location.Algorithm"
+            android:exported="true" />
+
+        <service
+            android:name="com.aware.plugin.google.fused_location.Geofences"
             android:exported="true" />
 
         <activity

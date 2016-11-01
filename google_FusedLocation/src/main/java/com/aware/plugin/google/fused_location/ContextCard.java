@@ -6,9 +6,10 @@ import android.database.Cursor;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,7 +19,6 @@ import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.aware.Aware;
 import com.aware.providers.Locations_Provider;
 import com.aware.utils.IContextCard;
 
@@ -35,6 +35,8 @@ public class ContextCard implements IContextCard {
 
     @Override
     public View getContextCard(final Context context) {
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View card = inflater.inflate(R.layout.card, null);
@@ -62,9 +64,7 @@ public class ContextCard implements IContextCard {
         geofencer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Location user_location = new Location("Current Location");
-
                 Uri locationURI = Uri.parse("content://" + context.getPackageName() + ".provider.locations/locations");
                 Cursor last_location = context.getContentResolver().query(locationURI, null, null, null, Locations_Provider.Locations_Data.TIMESTAMP + " DESC LIMIT 1");
                 if (last_location != null && last_location.moveToFirst()) {
@@ -76,7 +76,7 @@ public class ContextCard implements IContextCard {
 
                 Intent locationGeofencer = new Intent(context, GeofenceMap.class);
                 locationGeofencer.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                if (GeofenceUtils.getLabel(context, user_location).length()>0) {
+                if (GeofenceUtils.getLabel(context, user_location).length() > 0) {
                     locationGeofencer.putExtra(GeofenceMap.EXTRA_LABEL, GeofenceUtils.getLabel(context, user_location));
                 }
                 context.startActivity(locationGeofencer);
@@ -98,20 +98,26 @@ public class ContextCard implements IContextCard {
             last_update.setText(String.format("%s", DateUtils.getRelativeTimeSpanString(timestamp, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS).toString()));
 
             try {
-                Geocoder geo = new Geocoder(context);
-                String geo_text = "";
-                List<Address> addressList = geo.getFromLocation(lat, lon, 1);
-                for (int i = 0; i < addressList.size(); i++) {
-                    Address address1 = addressList.get(i);
-                    for (int j = 0; j < address1.getMaxAddressLineIndex(); j++) {
-                        if (address1.getAddressLine(j).length() > 0) {
-                            geo_text += address1.getAddressLine(j) + "\n";
-                        }
-                    }
-                    geo_text += address1.getCountryName();
-                }
+                NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
-                geo_text += "\nGeofence: " + GeofenceUtils.getLabel(context, user_location) + " (" + last_location.getFloat(last_location.getColumnIndex(Locations_Provider.Locations_Data.ACCURACY)) + " meters)";
+                String geo_text = "";
+                if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
+                    Geocoder geo = new Geocoder(context);
+                    List<Address> addressList = geo.getFromLocation(lat, lon, 1);
+                    for (int i = 0; i < addressList.size(); i++) {
+                        Address address1 = addressList.get(i);
+                        for (int j = 0; j < address1.getMaxAddressLineIndex(); j++) {
+                            if (address1.getAddressLine(j).length() > 0) {
+                                geo_text += address1.getAddressLine(j) + "\n";
+                            }
+                        }
+                        geo_text += address1.getCountryName();
+                    }
+
+                    geo_text += "\nGeofence: " + GeofenceUtils.getLabel(context, user_location) + " (" + last_location.getFloat(last_location.getColumnIndex(Locations_Provider.Locations_Data.ACCURACY)) + " meters)";
+                } else {
+                    geo_text = user_location.getLongitude() + "," + user_location.getLatitude() + " (" + user_location.getAccuracy() + " meters)";
+                }
 
                 address.setText(geo_text);
             } catch (IOException e) {
@@ -119,12 +125,10 @@ public class ContextCard implements IContextCard {
             }
         }
         if (last_location != null && !last_location.isClosed()) last_location.close();
-
         return card;
     }
 
-    public class GeofencesAdapter extends CursorAdapter {
-
+    private class GeofencesAdapter extends CursorAdapter {
         private Context mContext;
 
         public GeofencesAdapter(Context context, Cursor c, boolean autoRequery) {

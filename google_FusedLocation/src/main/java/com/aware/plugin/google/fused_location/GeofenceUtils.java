@@ -32,9 +32,9 @@ public class GeofenceUtils {
                     label = geofences.getString(geofences.getColumnIndex(Provider.Geofences.GEO_LABEL));
                 }
             } while (geofences.moveToNext());
-            geofences.close();
         }
-        return ((label.length()>0) ? label : "");
+        if (geofences != null && ! geofences.isClosed()) geofences.close();
+        return label;
     }
 
     /**

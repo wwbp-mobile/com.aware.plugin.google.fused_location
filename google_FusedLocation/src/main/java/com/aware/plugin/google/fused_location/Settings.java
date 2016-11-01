@@ -10,6 +10,7 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -63,7 +64,7 @@ public class Settings extends PreferenceActivity implements SharedPreferences.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         prefs.registerOnSharedPreferenceChangeListener(this);
     }
 
@@ -72,34 +73,40 @@ public class Settings extends PreferenceActivity implements SharedPreferences.On
         super.onResume();
 
         active = (CheckBoxPreference) findPreference(STATUS_GOOGLE_FUSED_LOCATION);
-        if (Aware.getSetting(this, STATUS_GOOGLE_FUSED_LOCATION).length() == 0)
-            Aware.setSetting(this, STATUS_GOOGLE_FUSED_LOCATION, true);
-        active.setChecked(Aware.getSetting(this, STATUS_GOOGLE_FUSED_LOCATION).equals("true"));
+        if (Aware.getSetting(getApplicationContext(), STATUS_GOOGLE_FUSED_LOCATION).length() == 0) {
+            Aware.setSetting(getApplicationContext(), STATUS_GOOGLE_FUSED_LOCATION, true);
+        }
+        active.setChecked(Aware.getSetting(getApplicationContext(), STATUS_GOOGLE_FUSED_LOCATION).equals("true"));
 
         update_frequency = (EditTextPreference) findPreference(FREQUENCY_GOOGLE_FUSED_LOCATION);
-        if (Aware.getSetting(this, FREQUENCY_GOOGLE_FUSED_LOCATION).length() == 0)
-            Aware.setSetting(this, FREQUENCY_GOOGLE_FUSED_LOCATION, 300);
-        update_frequency.setSummary("Every " + Aware.getSetting(this, FREQUENCY_GOOGLE_FUSED_LOCATION) + " second(s)");
+        if (Aware.getSetting(getApplicationContext(), FREQUENCY_GOOGLE_FUSED_LOCATION).length() == 0) {
+            Aware.setSetting(getApplicationContext(), FREQUENCY_GOOGLE_FUSED_LOCATION, 300);
+        }
+        update_frequency.setSummary("Every " + Aware.getSetting(getApplicationContext(), FREQUENCY_GOOGLE_FUSED_LOCATION) + " second(s)");
 
         max_update_frequency = (EditTextPreference) findPreference(MAX_FREQUENCY_GOOGLE_FUSED_LOCATION);
-        if (Aware.getSetting(this, MAX_FREQUENCY_GOOGLE_FUSED_LOCATION).length() == 0)
-            Aware.setSetting(this, MAX_FREQUENCY_GOOGLE_FUSED_LOCATION, 60);
+        if (Aware.getSetting(getApplicationContext(), MAX_FREQUENCY_GOOGLE_FUSED_LOCATION).length() == 0) {
+            Aware.setSetting(getApplicationContext(), MAX_FREQUENCY_GOOGLE_FUSED_LOCATION, 60);
+        }
         max_update_frequency.setSummary("Every " + Aware.getSetting(this, MAX_FREQUENCY_GOOGLE_FUSED_LOCATION) + " second(s)");
 
         fallback_timeout = (EditTextPreference) findPreference(FALLBACK_LOCATION_TIMEOUT);
-        if (Aware.getSetting(this, FALLBACK_LOCATION_TIMEOUT).length() == 0)
-            Aware.setSetting(this, FALLBACK_LOCATION_TIMEOUT, 20);
-        fallback_timeout.setSummary("Wait " + Aware.getSetting(this, FALLBACK_LOCATION_TIMEOUT) + " second(s)");
+        if (Aware.getSetting(getApplicationContext(), FALLBACK_LOCATION_TIMEOUT).length() == 0) {
+            Aware.setSetting(getApplicationContext(), FALLBACK_LOCATION_TIMEOUT, 20);
+        }
+        fallback_timeout.setSummary("Wait " + Aware.getSetting(getApplicationContext(), FALLBACK_LOCATION_TIMEOUT) + " second(s)");
 
         location_sensitivity = (EditTextPreference) findPreference(LOCATION_SENSITIVITY);
-        if (Aware.getSetting(this, LOCATION_SENSITIVITY).length() == 0)
-            Aware.setSetting(this, LOCATION_SENSITIVITY, 5);
-        location_sensitivity.setSummary("More than " + Aware.getSetting(this, LOCATION_SENSITIVITY) + " meter(s)");
+        if (Aware.getSetting(getApplicationContext(), LOCATION_SENSITIVITY).length() == 0) {
+            Aware.setSetting(getApplicationContext(), LOCATION_SENSITIVITY, 5);
+        }
+        location_sensitivity.setSummary("More than " + Aware.getSetting(getApplicationContext(), LOCATION_SENSITIVITY) + " meter(s)");
 
         accuracy = (ListPreference) findPreference(ACCURACY_GOOGLE_FUSED_LOCATION);
-        if (Aware.getSetting(this, ACCURACY_GOOGLE_FUSED_LOCATION).length() == 0)
-            Aware.setSetting(this, ACCURACY_GOOGLE_FUSED_LOCATION, LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-        accuracy.setSummary(getAccuracy(Integer.parseInt(Aware.getSetting(this, ACCURACY_GOOGLE_FUSED_LOCATION))));
+        if (Aware.getSetting(getApplicationContext(), ACCURACY_GOOGLE_FUSED_LOCATION).length() == 0) {
+            Aware.setSetting(getApplicationContext(), ACCURACY_GOOGLE_FUSED_LOCATION, LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        }
+        accuracy.setSummary(getAccuracy(Integer.parseInt(Aware.getSetting(getApplicationContext(), ACCURACY_GOOGLE_FUSED_LOCATION))));
     }
 
     @Override
@@ -123,13 +130,14 @@ public class Settings extends PreferenceActivity implements SharedPreferences.On
         }
         if (preference.getKey().equals(ACCURACY_GOOGLE_FUSED_LOCATION)) {
             Aware.setSetting(getApplicationContext(), key, sharedPreferences.getString(key, String.valueOf(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)));
-            accuracy.setSummary(getAccuracy(Integer.parseInt(Aware.getSetting(this, ACCURACY_GOOGLE_FUSED_LOCATION))));
+            accuracy.setSummary(getAccuracy(Integer.parseInt(Aware.getSetting(getApplicationContext(), ACCURACY_GOOGLE_FUSED_LOCATION))));
         }
         if (preference.getKey().equals(STATUS_GOOGLE_FUSED_LOCATION)) {
             Aware.setSetting(getApplicationContext(), key, sharedPreferences.getBoolean(key, false));
             active.setChecked(sharedPreferences.getBoolean(key, false));
         }
-        if (Aware.getSetting(this, STATUS_GOOGLE_FUSED_LOCATION).equals("true")) {
+
+        if (Aware.getSetting(getApplicationContext(), STATUS_GOOGLE_FUSED_LOCATION).equals("true")) {
             Aware.startPlugin(getApplicationContext(), "com.aware.plugin.google.fused_location");
         } else {
             Aware.stopPlugin(getApplicationContext(), "com.aware.plugin.google.fused_location");

@@ -6,7 +6,7 @@ group = "com.awareframework"
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.1"
+    buildToolsVersion "24.0.3"
 
     defaultConfig {
         applicationId "com.aware.plugin.google.fused_location"

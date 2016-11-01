@@ -1,6 +1,8 @@
 package com.aware.plugin.google.fused_location;
 
 import android.Manifest;
+import android.content.ComponentName;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -102,6 +104,15 @@ public class GeofenceMap extends FragmentActivity implements OnMapReadyCallback 
                 }
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Intent stream = new Intent();
+        ComponentName cp = new ComponentName("com.aware.phone", "com.aware.phone.ui.Stream_UI");
+        stream.setComponent(cp);
+        startActivity(stream);
     }
 
     @Override
