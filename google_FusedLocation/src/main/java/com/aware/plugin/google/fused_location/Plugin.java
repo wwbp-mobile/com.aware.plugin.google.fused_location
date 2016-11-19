@@ -257,7 +257,7 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
         Intent geofences = new Intent(this, com.aware.plugin.google.fused_location.Geofences.class);
         stopService(geofences);
 
-        Aware.stopPlugin(this, PACKAGE_NAME);
+//        Aware.stopPlugin(this, PACKAGE_NAME);
         Aware.stopAWARE();
     }
 
