@@ -26,8 +26,8 @@ public class Geofences extends Aware_Plugin {
         DATABASE_TABLES = Provider.DATABASE_TABLES;
         TABLES_FIELDS = Provider.TABLES_FIELDS;
         CONTEXT_URIS = new Uri[]{
-                Provider.Geofences.CONTENT_URI,
-                Provider.Geofences_Data.CONTENT_URI
+                Uri.parse("content://" + getPackageName() + ".provider.geofences/fused_geofences"),
+                Uri.parse("content://" + getPackageName() + ".provider.geofences/fused_geofences_data")
         };
     }
 }
