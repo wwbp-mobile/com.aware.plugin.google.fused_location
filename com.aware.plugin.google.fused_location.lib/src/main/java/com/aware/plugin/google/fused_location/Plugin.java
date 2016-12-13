@@ -96,10 +96,10 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
                     .addApiIfAvailable(LocationServices.API)
                     .build();
 
-            Intent locationIntent = new Intent(this, com.aware.plugin.google.fused_location.Algorithm.class);
+            Intent locationIntent = new Intent(this, Algorithm.class);
             pIntent = PendingIntent.getService(this, 0, locationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-            Intent geofences = new Intent(this, com.aware.plugin.google.fused_location.Geofences.class);
+            Intent geofences = new Intent(this, GeofencesTracker.class);
             startService(geofences);
 
             Aware.startPlugin(this, PACKAGE_NAME);
@@ -185,14 +185,14 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
                         entered.put(Provider.Geofences_Data.GEO_LAT, geofences.getDouble(geofences.getColumnIndex(Provider.Geofences.GEO_LAT)));
                         entered.put(Provider.Geofences_Data.GEO_LONG, geofences.getString(geofences.getColumnIndex(Provider.Geofences.GEO_LONG)));
                         entered.put(Provider.Geofences_Data.DISTANCE, GeofenceUtils.getDistance(currentLocation, geofenceLocation));
-                        entered.put(Provider.Geofences_Data.STATUS, Geofences.STATUS_ENTER);
+                        entered.put(Provider.Geofences_Data.STATUS, GeofencesTracker.STATUS_ENTER);
 
                         getContentResolver().insert(Provider.Geofences_Data.CONTENT_URI, entered);
 
-                        Intent geofenced = new Intent(Geofences.ACTION_AWARE_PLUGIN_FUSED_ENTERED_GEOFENCE);
-                        geofenced.putExtra(Geofences.EXTRA_LABEL, geofences.getString(geofences.getColumnIndex(Provider.Geofences.GEO_LABEL)));
-                        geofenced.putExtra(Geofences.EXTRA_LOCATION, geofenceLocation);
-                        geofenced.putExtra(Geofences.EXTRA_RADIUS, geofences.getDouble(geofences.getColumnIndex(Provider.Geofences.GEO_RADIUS)));
+                        Intent geofenced = new Intent(GeofencesTracker.ACTION_AWARE_PLUGIN_FUSED_ENTERED_GEOFENCE);
+                        geofenced.putExtra(GeofencesTracker.EXTRA_LABEL, geofences.getString(geofences.getColumnIndex(Provider.Geofences.GEO_LABEL)));
+                        geofenced.putExtra(GeofencesTracker.EXTRA_LOCATION, geofenceLocation);
+                        geofenced.putExtra(GeofencesTracker.EXTRA_RADIUS, geofences.getDouble(geofences.getColumnIndex(Provider.Geofences.GEO_RADIUS)));
                         sendBroadcast(geofenced);
 
                         if (Aware.DEBUG)
@@ -201,10 +201,10 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
                         lastGeofence = geofenceLocation;
                         break;
                     } else {
-                        Intent geofenced = new Intent(Geofences.ACTION_AWARE_PLUGIN_FUSED_INSIDE_GEOGENCE);
-                        geofenced.putExtra(Geofences.EXTRA_LABEL, GeofenceUtils.getLabel(this, lastGeofence));
-                        geofenced.putExtra(Geofences.EXTRA_LOCATION, lastGeofence);
-                        geofenced.putExtra(Geofences.EXTRA_RADIUS, GeofenceUtils.getLabelLocationRadius(this, GeofenceUtils.getLabel(this, lastGeofence)));
+                        Intent geofenced = new Intent(GeofencesTracker.ACTION_AWARE_PLUGIN_FUSED_INSIDE_GEOGENCE);
+                        geofenced.putExtra(GeofencesTracker.EXTRA_LABEL, GeofenceUtils.getLabel(this, lastGeofence));
+                        geofenced.putExtra(GeofencesTracker.EXTRA_LOCATION, lastGeofence);
+                        geofenced.putExtra(GeofencesTracker.EXTRA_RADIUS, GeofenceUtils.getLabelLocationRadius(this, GeofenceUtils.getLabel(this, lastGeofence)));
                         sendBroadcast(geofenced);
 
                         if (Aware.DEBUG) Log.d(Aware.TAG, "Inside geofence: "+ GeofenceUtils.getLabel(this, lastGeofence));
@@ -223,14 +223,14 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
                 exited.put(Provider.Geofences_Data.GEO_LAT, lastGeofence.getLatitude());
                 exited.put(Provider.Geofences_Data.GEO_LONG, lastGeofence.getLongitude());
                 exited.put(Provider.Geofences_Data.DISTANCE, GeofenceUtils.getDistance(currentLocation, lastGeofence));
-                exited.put(Provider.Geofences_Data.STATUS, Geofences.STATUS_EXIT);
+                exited.put(Provider.Geofences_Data.STATUS, GeofencesTracker.STATUS_EXIT);
 
                 getContentResolver().insert(Provider.Geofences_Data.CONTENT_URI, exited);
 
-                Intent geofenced = new Intent(Geofences.ACTION_AWARE_PLUGIN_FUSED_EXITED_GEOFENCE);
-                geofenced.putExtra(Geofences.EXTRA_LABEL, label);
-                geofenced.putExtra(Geofences.EXTRA_LOCATION, lastGeofence);
-                geofenced.putExtra(Geofences.EXTRA_RADIUS, radius);
+                Intent geofenced = new Intent(GeofencesTracker.ACTION_AWARE_PLUGIN_FUSED_EXITED_GEOFENCE);
+                geofenced.putExtra(GeofencesTracker.EXTRA_LABEL, label);
+                geofenced.putExtra(GeofencesTracker.EXTRA_LOCATION, lastGeofence);
+                geofenced.putExtra(GeofencesTracker.EXTRA_RADIUS, radius);
                 sendBroadcast(geofenced);
 
                 if (Aware.DEBUG)
@@ -254,7 +254,7 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
             mLocationClient.disconnect();
         }
 
-        Intent geofences = new Intent(this, com.aware.plugin.google.fused_location.Geofences.class);
+        Intent geofences = new Intent(this, GeofencesTracker.class);
         stopService(geofences);
 
         Aware.stopAWARE();

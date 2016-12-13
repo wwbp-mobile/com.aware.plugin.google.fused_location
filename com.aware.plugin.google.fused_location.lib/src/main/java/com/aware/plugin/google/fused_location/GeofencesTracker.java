@@ -7,7 +7,7 @@ import com.aware.utils.Aware_Plugin;
 /**
  * Created by denzil on 08/06/16.
  */
-public class Geofences extends Aware_Plugin {
+public class GeofencesTracker extends Aware_Plugin {
 
     public static final String ACTION_AWARE_PLUGIN_FUSED_ENTERED_GEOFENCE = "ACTION_AWARE_PLUGIN_FUSED_ENTERED_GEOFENCE";
     public static final String ACTION_AWARE_PLUGIN_FUSED_EXITED_GEOFENCE = "ACTION_AWARE_PLUGIN_FUSED_EXITED_GEOFENCE";
@@ -26,8 +26,8 @@ public class Geofences extends Aware_Plugin {
         DATABASE_TABLES = Provider.DATABASE_TABLES;
         TABLES_FIELDS = Provider.TABLES_FIELDS;
         CONTEXT_URIS = new Uri[]{
-                Uri.parse("content://" + getPackageName() + ".provider.geofences/fused_geofences"),
-                Uri.parse("content://" + getPackageName() + ".provider.geofences/fused_geofences_data")
+                Provider.Geofences.CONTENT_URI,
+                Provider.Geofences_Data.CONTENT_URI
         };
     }
 }

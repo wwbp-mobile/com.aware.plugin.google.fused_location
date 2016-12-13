@@ -25,9 +25,7 @@ import java.util.HashMap;
 public class Provider extends ContentProvider {
 
     public static String AUTHORITY = "com.aware.plugin.google.fused_location.provider.geofences";
-    public static final int DATABASE_VERSION = 2;
-
-    public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
+    public static final int DATABASE_VERSION = 3;
 
     public static final String DATABASE_NAME = "fused_geofences.db";
 
@@ -40,7 +38,7 @@ public class Provider extends ContentProvider {
     };
 
     public static final class Geofences implements AWAREColumns {
-        public static final Uri CONTENT_URI = Uri.withAppendedPath(Provider.CONTENT_URI, DB_TBL_GEOFENCES);
+        public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + DB_TBL_GEOFENCES);
         public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd.google.fused_location.geofences";
         public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd.google.fused_location.geofences";
 
@@ -51,7 +49,7 @@ public class Provider extends ContentProvider {
     }
 
     public static final class Geofences_Data implements AWAREColumns {
-        public static final Uri CONTENT_URI = Uri.withAppendedPath(Provider.CONTENT_URI, DB_TBL_GEOFENCES_DATA);
+        public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + DB_TBL_GEOFENCES_DATA);
         public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd.google.fused_location.geofences.data";
         public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd.google.fused_location.geofences.data";
 
