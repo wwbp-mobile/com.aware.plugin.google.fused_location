@@ -107,6 +107,4 @@ dependencies {
 //    compile "com.awareframework:aware-core:${aware_libs}@aar"
     compile 'com.github.denzilferreira:aware-client:development-SNAPSHOT'
     compile "com.google.android.gms:play-services-maps:${google_libs}"
-    compile "com.koushikdutta.ion:ion:2.1.6"
-    compile "org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0"
 }
