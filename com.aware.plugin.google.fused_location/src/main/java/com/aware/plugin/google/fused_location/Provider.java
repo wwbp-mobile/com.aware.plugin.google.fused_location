@@ -102,7 +102,7 @@ public class Provider extends ContentProvider {
     private static final int GEO_DATA_DIR = 3;
     private static final int GEO_DATA_ITEM = 4;
 
-    private static DatabaseHelper dbHelper;
+    private DatabaseHelper dbHelper;
     private static SQLiteDatabase database;
 
     private void initialiseDatabase() {
@@ -141,8 +141,6 @@ public class Provider extends ContentProvider {
         geoDataHash.put(Geofences_Data.GEO_LONG, Geofences_Data.GEO_LONG);
         geoDataHash.put(Geofences_Data.DISTANCE, Geofences_Data.DISTANCE);
         geoDataHash.put(Geofences_Data.STATUS, Geofences_Data.STATUS);
-
-        initialiseDatabase();
 
         return true;
     }
