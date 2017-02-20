@@ -101,8 +101,6 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
 
             Intent geofences = new Intent(this, GeofencesTracker.class);
             startService(geofences);
-
-            Aware.startPlugin(this, PACKAGE_NAME);
         }
     }
 
