@@ -5,19 +5,16 @@ import android.Manifest;
 import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.aware.Aware;
 import com.aware.Aware_Preferences;
 import com.aware.providers.Locations_Provider;
 import com.aware.providers.Locations_Provider.Locations_Data;
-import com.aware.ui.PermissionsHandler;
 import com.aware.utils.Aware_Plugin;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -51,6 +48,8 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
     public static ContextProducer contextProducer;
 
     private static Location lastGeofence;
+
+    private Intent aware, geofences;
 
     @Override
     public void onCreate() {
@@ -99,11 +98,12 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
             Intent locationIntent = new Intent(this, com.aware.plugin.google.fused_location.Algorithm.class);
             pIntent = PendingIntent.getService(this, 0, locationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-            Intent geofences = new Intent(this, GeofencesTracker.class);
+            geofences = new Intent(this, GeofencesTracker.class);
             startService(geofences);
         }
 
-        Aware.startAWARE(this);
+        aware = new Intent(this, Aware.class);
+        startService(aware);
     }
 
     @Override
@@ -240,10 +240,9 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
             mLocationClient.disconnect();
         }
 
-        Intent geofences = new Intent(this, GeofencesTracker.class);
         stopService(geofences);
 
-        Aware.stopAWARE(this);
+        stopService(aware);
     }
 
     private boolean is_google_services_available() {
