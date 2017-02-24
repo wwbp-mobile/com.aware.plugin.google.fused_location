@@ -102,20 +102,15 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
             Intent geofences = new Intent(this, GeofencesTracker.class);
             startService(geofences);
         }
+
+        Aware.startAWARE(this);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        boolean permissions_ok = true;
-        for (String p : REQUIRED_PERMISSIONS) {
-            if (ContextCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED) {
-                permissions_ok = false;
-                break;
-            }
-        }
+        super.onStartCommand(intent, flags, startId);
 
-        if (permissions_ok) {
-
+        if (PERMISSIONS_OK) {
             DEBUG = Aware.getSetting(this, Aware_Preferences.DEBUG_FLAG).equals("true");
 
             Aware.setSetting(this, Settings.STATUS_GOOGLE_FUSED_LOCATION, true);
@@ -138,18 +133,9 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
             if (mLocationClient != null && !mLocationClient.isConnected())
                 mLocationClient.connect();
 
-            checkGeofences(); //checks the geofences every 5 minutes
-
-            Aware.startAWARE(this);
-
-        } else {
-            Intent permissions = new Intent(this, PermissionsHandler.class);
-            permissions.putExtra(PermissionsHandler.EXTRA_REQUIRED_PERMISSIONS, REQUIRED_PERMISSIONS);
-            permissions.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(permissions);
+            checkGeofences();
         }
-
-        return super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
     }
 
     /**
