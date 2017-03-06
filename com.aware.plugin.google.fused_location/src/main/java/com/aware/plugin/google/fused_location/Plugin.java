@@ -16,6 +16,7 @@ import com.aware.Aware_Preferences;
 import com.aware.providers.Locations_Provider;
 import com.aware.providers.Locations_Provider.Locations_Data;
 import com.aware.utils.Aware_Plugin;
+import com.aware.utils.PluginsManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -49,7 +50,7 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
 
     private static Location lastGeofence;
 
-    private Intent aware, geofences;
+    private Intent geofences;
 
     @Override
     public void onCreate() {
@@ -101,9 +102,6 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
             geofences = new Intent(this, GeofencesTracker.class);
             startService(geofences);
         }
-
-        aware = new Intent(this, Aware.class);
-        startService(aware);
     }
 
     @Override
@@ -111,6 +109,9 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
         super.onStartCommand(intent, flags, startId);
 
         if (PERMISSIONS_OK) {
+
+            PluginsManager.enablePlugin(this, "com.aware.plugin.google.fused_location");
+
             DEBUG = Aware.getSetting(this, Aware_Preferences.DEBUG_FLAG).equals("true");
 
             Aware.setSetting(this, Settings.STATUS_GOOGLE_FUSED_LOCATION, true);
@@ -134,6 +135,8 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
                 mLocationClient.connect();
 
             checkGeofences();
+
+            Aware.startAWARE(this);
         }
         return START_STICKY;
     }
@@ -242,7 +245,7 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
 
         stopService(geofences);
 
-        stopService(aware);
+        Aware.stopAWARE(this);
     }
 
     private boolean is_google_services_available() {
