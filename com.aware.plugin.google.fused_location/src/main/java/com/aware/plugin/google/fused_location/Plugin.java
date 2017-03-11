@@ -242,7 +242,7 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
             mLocationClient.disconnect();
         }
 
-        stopService(geofences);
+        if (geofences != null) stopService(geofences);
 
         Aware.stopAWARE(this);
     }
