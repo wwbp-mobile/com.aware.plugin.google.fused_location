@@ -110,8 +110,6 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
 
         if (PERMISSIONS_OK) {
 
-            PluginsManager.enablePlugin(this, "com.aware.plugin.google.fused_location");
-
             DEBUG = Aware.getSetting(this, Aware_Preferences.DEBUG_FLAG).equals("true");
 
             Aware.setSetting(this, Settings.STATUS_GOOGLE_FUSED_LOCATION, true);
@@ -136,6 +134,7 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
 
             checkGeofences();
 
+            Aware.startPlugin(this, "com.aware.plugin.google.fused_location");
             Aware.startAWARE(this);
         }
         return START_STICKY;
