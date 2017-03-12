@@ -16,7 +16,6 @@ import com.aware.Aware_Preferences;
 import com.aware.providers.Locations_Provider;
 import com.aware.providers.Locations_Provider.Locations_Data;
 import com.aware.utils.Aware_Plugin;
-import com.aware.utils.PluginsManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -134,7 +133,7 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
 
             checkGeofences();
 
-            Aware.startPlugin(this, "com.aware.plugin.google.fused_location");
+            Aware.startPlugin(this, PACKAGE_NAME);
             Aware.startAWARE(this);
         }
         return START_STICKY;
@@ -184,7 +183,7 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
                         sendBroadcast(geofenced);
 
                         if (Aware.DEBUG)
-                            Log.d(Aware.TAG, "Geofence enter: \n"+ entered.toString());
+                            Log.d(Aware.TAG, "Geofence enter: \n" + entered.toString());
 
                         lastGeofence = geofenceLocation;
                         break;
@@ -195,7 +194,8 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
                         geofenced.putExtra(GeofencesTracker.EXTRA_RADIUS, GeofenceUtils.getLabelLocationRadius(this, GeofenceUtils.getLabel(this, lastGeofence)));
                         sendBroadcast(geofenced);
 
-                        if (Aware.DEBUG) Log.d(Aware.TAG, "Inside geofence: "+ GeofenceUtils.getLabel(this, lastGeofence));
+                        if (Aware.DEBUG)
+                            Log.d(Aware.TAG, "Inside geofence: " + GeofenceUtils.getLabel(this, lastGeofence));
                     }
                 }
             } while (geofences.moveToNext());
@@ -222,14 +222,14 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
                 sendBroadcast(geofenced);
 
                 if (Aware.DEBUG)
-                    Log.d(Aware.TAG, "Geofence exit:\n"+ exited.toString());
+                    Log.d(Aware.TAG, "Geofence exit:\n" + exited.toString());
 
                 lastGeofence = null;
             }
         } else {
             lastGeofence = null;
         }
-        if (geofences != null && ! geofences.isClosed()) geofences.close();
+        if (geofences != null && !geofences.isClosed()) geofences.close();
     }
 
     @Override
