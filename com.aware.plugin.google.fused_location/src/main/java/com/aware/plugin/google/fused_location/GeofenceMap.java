@@ -13,7 +13,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 
@@ -38,7 +40,7 @@ public class GeofenceMap extends FragmentActivity implements OnMapReadyCallback 
     private static GoogleMap mMap;
     private static EditText label;
     private static SeekBar radius;
-    private static FloatingActionButton save_label;
+    private static Button save_label;
 
     private static Circle geofence;
     private static Marker geocenter;
@@ -55,9 +57,11 @@ public class GeofenceMap extends FragmentActivity implements OnMapReadyCallback 
 
         //Make the dialog without title and transparent
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setBackgroundDrawable(new ColorDrawable(0));
 
         setContentView(R.layout.dialog_geolabel);
+
+        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        getWindow().setBackgroundDrawable(new ColorDrawable(0));
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -84,8 +88,7 @@ public class GeofenceMap extends FragmentActivity implements OnMapReadyCallback 
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
-        save_label = (FloatingActionButton) findViewById(R.id.save_label);
-        save_label.setBackgroundColor(Color.parseColor("#33B5E5"));
+        save_label = (Button) findViewById(R.id.save_label);
         save_label.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

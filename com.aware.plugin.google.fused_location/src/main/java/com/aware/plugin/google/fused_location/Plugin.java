@@ -5,19 +5,16 @@ import android.Manifest;
 import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.aware.Aware;
 import com.aware.Aware_Preferences;
 import com.aware.providers.Locations_Provider;
 import com.aware.providers.Locations_Provider.Locations_Data;
-import com.aware.ui.PermissionsHandler;
 import com.aware.utils.Aware_Plugin;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -51,6 +48,8 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
     public static ContextProducer contextProducer;
 
     private static Location lastGeofence;
+
+    private Intent geofences;
 
     @Override
     public void onCreate() {
@@ -99,24 +98,16 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
             Intent locationIntent = new Intent(this, com.aware.plugin.google.fused_location.Algorithm.class);
             pIntent = PendingIntent.getService(this, 0, locationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-            Intent geofences = new Intent(this, com.aware.plugin.google.fused_location.Geofences.class);
+            geofences = new Intent(this, GeofencesTracker.class);
             startService(geofences);
-
-            Aware.startPlugin(this, PACKAGE_NAME);
         }
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        boolean permissions_ok = true;
-        for (String p : REQUIRED_PERMISSIONS) {
-            if (ContextCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED) {
-                permissions_ok = false;
-                break;
-            }
-        }
+        super.onStartCommand(intent, flags, startId);
 
-        if (permissions_ok) {
+        if (PERMISSIONS_OK) {
 
             DEBUG = Aware.getSetting(this, Aware_Preferences.DEBUG_FLAG).equals("true");
 
@@ -140,16 +131,12 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
             if (mLocationClient != null && !mLocationClient.isConnected())
                 mLocationClient.connect();
 
-            checkGeofences(); //checks the geofences every 5 minutes
+            checkGeofences();
 
-        } else {
-            Intent permissions = new Intent(this, PermissionsHandler.class);
-            permissions.putExtra(PermissionsHandler.EXTRA_REQUIRED_PERMISSIONS, REQUIRED_PERMISSIONS);
-            permissions.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(permissions);
+            Aware.startPlugin(this, PACKAGE_NAME);
+            Aware.startAWARE(this);
         }
-
-        return super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
     }
 
     /**
@@ -185,29 +172,30 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
                         entered.put(Provider.Geofences_Data.GEO_LAT, geofences.getDouble(geofences.getColumnIndex(Provider.Geofences.GEO_LAT)));
                         entered.put(Provider.Geofences_Data.GEO_LONG, geofences.getString(geofences.getColumnIndex(Provider.Geofences.GEO_LONG)));
                         entered.put(Provider.Geofences_Data.DISTANCE, GeofenceUtils.getDistance(currentLocation, geofenceLocation));
-                        entered.put(Provider.Geofences_Data.STATUS, Geofences.STATUS_ENTER);
+                        entered.put(Provider.Geofences_Data.STATUS, GeofencesTracker.STATUS_ENTER);
 
                         getContentResolver().insert(Provider.Geofences_Data.CONTENT_URI, entered);
 
-                        Intent geofenced = new Intent(Geofences.ACTION_AWARE_PLUGIN_FUSED_ENTERED_GEOFENCE);
-                        geofenced.putExtra(Geofences.EXTRA_LABEL, geofences.getString(geofences.getColumnIndex(Provider.Geofences.GEO_LABEL)));
-                        geofenced.putExtra(Geofences.EXTRA_LOCATION, geofenceLocation);
-                        geofenced.putExtra(Geofences.EXTRA_RADIUS, geofences.getDouble(geofences.getColumnIndex(Provider.Geofences.GEO_RADIUS)));
+                        Intent geofenced = new Intent(GeofencesTracker.ACTION_AWARE_PLUGIN_FUSED_ENTERED_GEOFENCE);
+                        geofenced.putExtra(GeofencesTracker.EXTRA_LABEL, geofences.getString(geofences.getColumnIndex(Provider.Geofences.GEO_LABEL)));
+                        geofenced.putExtra(GeofencesTracker.EXTRA_LOCATION, geofenceLocation);
+                        geofenced.putExtra(GeofencesTracker.EXTRA_RADIUS, geofences.getDouble(geofences.getColumnIndex(Provider.Geofences.GEO_RADIUS)));
                         sendBroadcast(geofenced);
 
                         if (Aware.DEBUG)
-                            Log.d(Aware.TAG, "Geofence enter: \n"+ entered.toString());
+                            Log.d(Aware.TAG, "Geofence enter: \n" + entered.toString());
 
                         lastGeofence = geofenceLocation;
                         break;
                     } else {
-                        Intent geofenced = new Intent(Geofences.ACTION_AWARE_PLUGIN_FUSED_INSIDE_GEOGENCE);
-                        geofenced.putExtra(Geofences.EXTRA_LABEL, GeofenceUtils.getLabel(this, lastGeofence));
-                        geofenced.putExtra(Geofences.EXTRA_LOCATION, lastGeofence);
-                        geofenced.putExtra(Geofences.EXTRA_RADIUS, GeofenceUtils.getLabelLocationRadius(this, GeofenceUtils.getLabel(this, lastGeofence)));
+                        Intent geofenced = new Intent(GeofencesTracker.ACTION_AWARE_PLUGIN_FUSED_INSIDE_GEOGENCE);
+                        geofenced.putExtra(GeofencesTracker.EXTRA_LABEL, GeofenceUtils.getLabel(this, lastGeofence));
+                        geofenced.putExtra(GeofencesTracker.EXTRA_LOCATION, lastGeofence);
+                        geofenced.putExtra(GeofencesTracker.EXTRA_RADIUS, GeofenceUtils.getLabelLocationRadius(this, GeofenceUtils.getLabel(this, lastGeofence)));
                         sendBroadcast(geofenced);
 
-                        if (Aware.DEBUG) Log.d(Aware.TAG, "Inside geofence: "+ GeofenceUtils.getLabel(this, lastGeofence));
+                        if (Aware.DEBUG)
+                            Log.d(Aware.TAG, "Inside geofence: " + GeofenceUtils.getLabel(this, lastGeofence));
                     }
                 }
             } while (geofences.moveToNext());
@@ -223,25 +211,25 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
                 exited.put(Provider.Geofences_Data.GEO_LAT, lastGeofence.getLatitude());
                 exited.put(Provider.Geofences_Data.GEO_LONG, lastGeofence.getLongitude());
                 exited.put(Provider.Geofences_Data.DISTANCE, GeofenceUtils.getDistance(currentLocation, lastGeofence));
-                exited.put(Provider.Geofences_Data.STATUS, Geofences.STATUS_EXIT);
+                exited.put(Provider.Geofences_Data.STATUS, GeofencesTracker.STATUS_EXIT);
 
                 getContentResolver().insert(Provider.Geofences_Data.CONTENT_URI, exited);
 
-                Intent geofenced = new Intent(Geofences.ACTION_AWARE_PLUGIN_FUSED_EXITED_GEOFENCE);
-                geofenced.putExtra(Geofences.EXTRA_LABEL, label);
-                geofenced.putExtra(Geofences.EXTRA_LOCATION, lastGeofence);
-                geofenced.putExtra(Geofences.EXTRA_RADIUS, radius);
+                Intent geofenced = new Intent(GeofencesTracker.ACTION_AWARE_PLUGIN_FUSED_EXITED_GEOFENCE);
+                geofenced.putExtra(GeofencesTracker.EXTRA_LABEL, label);
+                geofenced.putExtra(GeofencesTracker.EXTRA_LOCATION, lastGeofence);
+                geofenced.putExtra(GeofencesTracker.EXTRA_RADIUS, radius);
                 sendBroadcast(geofenced);
 
                 if (Aware.DEBUG)
-                    Log.d(Aware.TAG, "Geofence exit:\n"+ exited.toString());
+                    Log.d(Aware.TAG, "Geofence exit:\n" + exited.toString());
 
                 lastGeofence = null;
             }
         } else {
             lastGeofence = null;
         }
-        if (geofences != null && ! geofences.isClosed()) geofences.close();
+        if (geofences != null && !geofences.isClosed()) geofences.close();
     }
 
     @Override
@@ -254,10 +242,9 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
             mLocationClient.disconnect();
         }
 
-        Intent geofences = new Intent(this, com.aware.plugin.google.fused_location.Geofences.class);
-        stopService(geofences);
+        if (geofences != null) stopService(geofences);
 
-        Aware.stopAWARE();
+        Aware.stopAWARE(this);
     }
 
     private boolean is_google_services_available() {

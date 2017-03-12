@@ -1,6 +1,6 @@
 /**
-@author: denzil
-*/
+ * @author: denzil
+ */
 package com.aware.plugin.google.fused_location;
 
 import android.app.IntentService;
@@ -22,18 +22,16 @@ public class Algorithm extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        
-        boolean DEBUG = Aware.getSetting(this, Aware_Preferences.DEBUG_FLAG).equals("true");
-        
-        if( intent != null && intent.hasExtra(LocationServices.FusedLocationApi.KEY_LOCATION_CHANGED ) ) {
-        
+
+        if (intent != null && intent.hasExtra(LocationServices.FusedLocationApi.KEY_LOCATION_CHANGED)) {
+
             Location bestLocation = (Location) intent.getExtras().get(LocationServices.FusedLocationApi.KEY_LOCATION_CHANGED);
 
-            if( bestLocation == null ) return;
+            if (bestLocation == null) return;
 
             ContentValues rowData = new ContentValues();
             rowData.put(Locations_Data.TIMESTAMP, System.currentTimeMillis());
-            rowData.put(Locations_Data.DEVICE_ID, Aware.getSetting(this,Aware_Preferences.DEVICE_ID));
+            rowData.put(Locations_Data.DEVICE_ID, Aware.getSetting(this, Aware_Preferences.DEVICE_ID));
             rowData.put(Locations_Data.LATITUDE, bestLocation.getLatitude());
             rowData.put(Locations_Data.LONGITUDE, bestLocation.getLongitude());
             rowData.put(Locations_Data.BEARING, bestLocation.getBearing());
@@ -41,10 +39,10 @@ public class Algorithm extends IntentService {
             rowData.put(Locations_Data.ALTITUDE, bestLocation.getAltitude());
             rowData.put(Locations_Data.PROVIDER, bestLocation.getProvider());
             rowData.put(Locations_Data.ACCURACY, bestLocation.getAccuracy());
-            
+
             getContentResolver().insert(Locations_Data.CONTENT_URI, rowData);
-            
-            if( DEBUG ) Log.d(Plugin.TAG, "Fused location:" + rowData.toString());
+
+            if (Aware.DEBUG) Log.d(Aware.TAG, "Fused location:" + rowData.toString());
 
             if (Plugin.contextProducer != null)
                 Plugin.contextProducer.onContext();

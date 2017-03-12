@@ -58,7 +58,7 @@ public class ContextCard implements IContextCard {
         params.height = 400;
         geofences.setLayoutParams(params);
 
-        adapter = new GeofencesAdapter(context, context.getContentResolver().query(Provider.Geofences.CONTENT_URI, null, null, null, Provider.Geofences.GEO_LABEL + " ASC"), true);
+        adapter = new GeofencesAdapter(context, context.getContentResolver().query(Uri.parse("content://" + context.getPackageName() + ".provider.geofences/fused_geofences"), null, null, null, Provider.Geofences.GEO_LABEL + " ASC"), true);
         geofences.setAdapter(adapter);
 
         geofencer.setOnClickListener(new View.OnClickListener() {
@@ -179,8 +179,8 @@ public class ContextCard implements IContextCard {
             delete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mContext.getContentResolver().delete(Provider.Geofences.CONTENT_URI, Provider.Geofences.GEO_LABEL + " LIKE '" + labeltxt + "'", null);
-                    adapter.changeCursor(mContext.getContentResolver().query(Provider.Geofences.CONTENT_URI, null, null, null, Provider.Geofences.GEO_LABEL + " ASC"));
+                    mContext.getContentResolver().delete(Uri.parse("content://" + mContext.getPackageName() + ".provider.geofences/fused_geofences"), Provider.Geofences.GEO_LABEL + " LIKE '" + labeltxt + "'", null);
+                    adapter.changeCursor(mContext.getContentResolver().query(Uri.parse("content://" + mContext.getPackageName() + ".provider.geofences/fused_geofences"), null, null, null, Provider.Geofences.GEO_LABEL + " ASC"));
                 }
             });
         }
