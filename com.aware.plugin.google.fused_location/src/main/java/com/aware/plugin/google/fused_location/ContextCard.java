@@ -32,6 +32,7 @@ public class ContextCard implements IContextCard {
 
     private ListView geofences;
     private GeofencesAdapter adapter;
+    private String geo_text = "";
 
     @Override
     public View getContextCard(final Context context) {
@@ -39,10 +40,12 @@ public class ContextCard implements IContextCard {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
         View card = inflater.inflate(R.layout.card, null);
-        TextView address = (TextView) card.findViewById(R.id.address);
-        TextView last_update = (TextView) card.findViewById(R.id.last_updated);
-        Button geofencer = (Button) card.findViewById(R.id.geofencer);
+
+        final TextView address = (TextView) card.findViewById(R.id.address);
+        final TextView last_update = (TextView) card.findViewById(R.id.last_updated);
+        final Button geofencer = (Button) card.findViewById(R.id.geofencer);
 
         geofences = (ListView) card.findViewById(R.id.geofences_list);
 
@@ -84,45 +87,45 @@ public class ContextCard implements IContextCard {
         });
 
         Uri locationURI = Uri.parse("content://" + context.getPackageName() + ".provider.locations/locations");
-        Cursor last_location = context.getContentResolver().query(locationURI, null, null, null, Locations_Provider.Locations_Data.TIMESTAMP + " DESC LIMIT 1");
+        final Cursor last_location = context.getContentResolver().query(locationURI, null, null, null, Locations_Provider.Locations_Data.TIMESTAMP + " DESC LIMIT 1");
         if (last_location != null && last_location.moveToFirst()) {
-            double lat = last_location.getDouble(last_location.getColumnIndex(Locations_Provider.Locations_Data.LATITUDE));
-            double lon = last_location.getDouble(last_location.getColumnIndex(Locations_Provider.Locations_Data.LONGITUDE));
-            long timestamp = last_location.getLong(last_location.getColumnIndex(Locations_Provider.Locations_Data.TIMESTAMP));
+            final double lat = last_location.getDouble(last_location.getColumnIndex(Locations_Provider.Locations_Data.LATITUDE));
+            final double lon = last_location.getDouble(last_location.getColumnIndex(Locations_Provider.Locations_Data.LONGITUDE));
+            final long timestamp = last_location.getLong(last_location.getColumnIndex(Locations_Provider.Locations_Data.TIMESTAMP));
 
-            Location user_location = new Location("Current Location");
+            final Location user_location = new Location("Current Location");
             user_location.setLatitude(lat);
             user_location.setLongitude(lon);
             user_location.setAccuracy(last_location.getFloat(last_location.getColumnIndex(Locations_Provider.Locations_Data.ACCURACY)));
 
             last_update.setText(String.format("%s", DateUtils.getRelativeTimeSpanString(timestamp, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS).toString()));
 
-            try {
-                NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
-                String geo_text = "";
-                if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
-                    Geocoder geo = new Geocoder(context);
-                    List<Address> addressList = geo.getFromLocation(lat, lon, 1);
-                    for (int i = 0; i < addressList.size(); i++) {
-                        Address address1 = addressList.get(i);
-                        for (int j = 0; j < address1.getMaxAddressLineIndex(); j++) {
-                            if (address1.getAddressLine(j).length() > 0) {
-                                geo_text += address1.getAddressLine(j) + "\n";
+            if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Geocoder geo = new Geocoder(context);
+                            List<Address> addressList = geo.getFromLocation(lat, lon, 1);
+                            for (int i = 0; i < addressList.size(); i++) {
+                                Address address1 = addressList.get(i);
+                                for (int j = 0; j < address1.getMaxAddressLineIndex(); j++) {
+                                    if (address1.getAddressLine(j).length() > 0) {
+                                        geo_text += address1.getAddressLine(j) + "\n";
+                                    }
+                                }
+                                geo_text += address1.getCountryName();
                             }
-                        }
-                        geo_text += address1.getCountryName();
+                            geo_text += "\nGeofence: " + GeofenceUtils.getLabel(context, user_location) + " (" + last_location.getFloat(last_location.getColumnIndex(Locations_Provider.Locations_Data.ACCURACY)) + " meters)";
+                        } catch (IOException e){}
                     }
-
-                    geo_text += "\nGeofence: " + GeofenceUtils.getLabel(context, user_location) + " (" + last_location.getFloat(last_location.getColumnIndex(Locations_Provider.Locations_Data.ACCURACY)) + " meters)";
-                } else {
-                    geo_text = user_location.getLongitude() + "," + user_location.getLatitude() + " (" + user_location.getAccuracy() + " meters)";
-                }
-
-                address.setText(geo_text);
-            } catch (IOException e) {
-                e.printStackTrace();
+                }).start();
+            } else {
+                geo_text = user_location.getLongitude() + "," + user_location.getLatitude() + " (" + user_location.getAccuracy() + " meters)";
             }
+            address.setText(geo_text);
         }
         if (last_location != null && !last_location.isClosed()) last_location.close();
         return card;
@@ -131,7 +134,7 @@ public class ContextCard implements IContextCard {
     private class GeofencesAdapter extends CursorAdapter {
         private Context mContext;
 
-        public GeofencesAdapter(Context context, Cursor c, boolean autoRequery) {
+        GeofencesAdapter(Context context, Cursor c, boolean autoRequery) {
             super(context, c, autoRequery);
             mContext = context;
         }
