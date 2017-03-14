@@ -32,7 +32,6 @@ public class ContextCard implements IContextCard {
 
     private ListView geofences;
     private GeofencesAdapter adapter;
-    private String geo_text = "";
 
     @Override
     public View getContextCard(final Context context) {
@@ -101,12 +100,12 @@ public class ContextCard implements IContextCard {
             last_update.setText(String.format("%s", DateUtils.getRelativeTimeSpanString(timestamp, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS).toString()));
 
             NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-
             if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         try {
+                            String geo_text = "";
                             Geocoder geo = new Geocoder(context);
                             List<Address> addressList = geo.getFromLocation(lat, lon, 1);
                             for (int i = 0; i < addressList.size(); i++) {
@@ -118,14 +117,17 @@ public class ContextCard implements IContextCard {
                                 }
                                 geo_text += address1.getCountryName();
                             }
-                            geo_text += "\nGeofence: " + GeofenceUtils.getLabel(context, user_location) + " (" + last_location.getFloat(last_location.getColumnIndex(Locations_Provider.Locations_Data.ACCURACY)) + " meters)";
+
+                            if (GeofenceUtils.getLabel(context, user_location).length() > 0) {
+                                geo_text += "\nGeofence: " + GeofenceUtils.getLabel(context, user_location) + " (" + user_location.getAccuracy() + " meters)";
+                            }
+                            address.setText(geo_text);
                         } catch (IOException e){}
                     }
                 }).start();
             } else {
-                geo_text = user_location.getLongitude() + "," + user_location.getLatitude() + " (" + user_location.getAccuracy() + " meters)";
+                address.setText(user_location.getLongitude() + "," + user_location.getLatitude() + " (" + user_location.getAccuracy() + " meters)");
             }
-            address.setText(geo_text);
         }
         if (last_location != null && !last_location.isClosed()) last_location.close();
         return card;
