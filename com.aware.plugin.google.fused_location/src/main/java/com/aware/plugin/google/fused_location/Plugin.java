@@ -133,7 +133,6 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
 
             checkGeofences();
 
-            Aware.startPlugin(this, PACKAGE_NAME);
             Aware.startAWARE(this);
         }
         return START_STICKY;
