@@ -101,30 +101,26 @@ public class ContextCard implements IContextCard {
 
             NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
             if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            String geo_text = "";
-                            Geocoder geo = new Geocoder(context);
-                            List<Address> addressList = geo.getFromLocation(lat, lon, 1);
-                            for (int i = 0; i < addressList.size(); i++) {
-                                Address address1 = addressList.get(i);
-                                for (int j = 0; j < address1.getMaxAddressLineIndex(); j++) {
-                                    if (address1.getAddressLine(j).length() > 0) {
-                                        geo_text += address1.getAddressLine(j) + "\n";
-                                    }
-                                }
-                                geo_text += address1.getCountryName();
+                try {
+                    String geo_text = "";
+                    Geocoder geo = new Geocoder(context);
+                    List<Address> addressList = geo.getFromLocation(lat, lon, 1);
+                    for (int i = 0; i < addressList.size(); i++) {
+                        Address address1 = addressList.get(i);
+                        for (int j = 0; j < address1.getMaxAddressLineIndex(); j++) {
+                            if (address1.getAddressLine(j).length() > 0) {
+                                geo_text += address1.getAddressLine(j) + "\n";
                             }
-
-                            if (GeofenceUtils.getLabel(context, user_location).length() > 0) {
-                                geo_text += "\nGeofence: " + GeofenceUtils.getLabel(context, user_location) + " (" + user_location.getAccuracy() + " meters)";
-                            }
-                            address.setText(geo_text);
-                        } catch (IOException e){}
+                        }
+                        geo_text += address1.getCountryName();
                     }
-                }).start();
+
+                    if (GeofenceUtils.getLabel(context, user_location).length() > 0) {
+                        geo_text += "\nGeofence: " + GeofenceUtils.getLabel(context, user_location) + " (" + user_location.getAccuracy() + " meters)";
+                    }
+                    address.setText(geo_text);
+                } catch (IOException e) {
+                }
             } else {
                 address.setText(user_location.getLongitude() + "," + user_location.getLatitude() + " (" + user_location.getAccuracy() + " meters)");
             }
