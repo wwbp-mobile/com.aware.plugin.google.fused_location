@@ -8,7 +8,6 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -57,10 +56,6 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
         super.onCreate();
 
         TAG = "AWARE::Google Fused Location";
-
-        DATABASE_TABLES = Locations_Provider.DATABASE_TABLES;
-        TABLES_FIELDS = Locations_Provider.TABLES_FIELDS;
-        CONTEXT_URIS = new Uri[]{Locations_Data.CONTENT_URI};
 
         CONTEXT_PRODUCER = new ContextProducer() {
             @Override
