@@ -10,6 +10,8 @@ android {
         targetSdkVersion target_sdk
         versionCode version_code
         versionName version_readable
+
+        resValue "string", "provider_google_fused", applicationId + ".provider.geofences"
     }
 
     signingConfigs {
@@ -48,10 +50,8 @@ repositories {
 }
 
 dependencies {
-    implementation "com.android.support:appcompat-v7:$support_libs"
-    implementation "com.android.support:gridlayout-v7:$support_libs"
-    implementation "com.github.denzilferreira:aware-client:$aware_libs"
+    api "com.github.denzilferreira:aware-client:$aware_libs"
     implementation "com.google.android.gms:play-services-location:$google_libs"
-    implementation "com.android.support:design:$support_libs"
     implementation "com.google.android.gms:play-services-maps:$google_libs"
+    implementation "com.android.support:design:$support_libs"
 }
