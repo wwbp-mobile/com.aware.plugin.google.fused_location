@@ -44,6 +44,7 @@
             android:authorities="${applicationId}.provider.geofences"
             android:label="@string/plugin_google_fused_location"
             android:exported="true"
+            android:syncable="true"
             android:readPermission="com.aware.READ_CONTEXT_DATA"
             android:writePermission="com.aware.WRITE_CONTEXT_DATA" />
 
