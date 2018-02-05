@@ -11,7 +11,7 @@ android {
         versionCode version_code
         versionName version_readable
 
-        resValue "string", "provider_google_fused", applicationId + ".provider.geofences"
+        resValue "string", "provider_google_fused", android.defaultConfig.applicationId + ".provider.geofences"
     }
 
     signingConfigs {

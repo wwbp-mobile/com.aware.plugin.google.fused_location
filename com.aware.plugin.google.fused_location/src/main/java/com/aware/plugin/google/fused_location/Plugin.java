@@ -2,10 +2,12 @@
 package com.aware.plugin.google.fused_location;
 
 import android.Manifest;
+import android.accounts.Account;
 import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SyncRequest;
 import android.database.Cursor;
 import android.location.Location;
 import android.os.Bundle;
@@ -127,23 +129,26 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
             checkGeofences();
 
             if (!Aware.isSyncEnabled(this, Provider.getAuthority(this)) && Aware.isStudy(this)) {
-                ContentResolver.setIsSyncable(Aware.getAWAREAccount(this), Provider.getAuthority(this), 1);
-                ContentResolver.setSyncAutomatically(Aware.getAWAREAccount(this), Provider.getAuthority(this), true);
-                ContentResolver.addPeriodicSync(
-                        Aware.getAWAREAccount(this),
-                        Provider.getAuthority(this),
-                        Bundle.EMPTY,
-                        Long.parseLong(Aware.getSetting(this, Aware_Preferences.FREQUENCY_WEBSERVICE)) * 60
-                );
+                Account aware_account = Aware.getAWAREAccount(getApplicationContext());
+                String authority = Provider.getAuthority(getApplicationContext());
+                long frequency = Long.parseLong(Aware.getSetting(this, Aware_Preferences.FREQUENCY_WEBSERVICE)) * 60;
 
-                ContentResolver.setIsSyncable(Aware.getAWAREAccount(this), Locations_Provider.getAuthority(this), 1);
-                ContentResolver.setSyncAutomatically(Aware.getAWAREAccount(this), Locations_Provider.getAuthority(this), true);
-                ContentResolver.addPeriodicSync(
-                        Aware.getAWAREAccount(this),
-                        Locations_Provider.getAuthority(this),
-                        Bundle.EMPTY,
-                        Long.parseLong(Aware.getSetting(this, Aware_Preferences.FREQUENCY_WEBSERVICE)) * 60
-                );
+                ContentResolver.setIsSyncable(aware_account, authority, 1);
+                ContentResolver.setSyncAutomatically(aware_account, authority, true);
+                SyncRequest request = new SyncRequest.Builder()
+                        .syncPeriodic(frequency, frequency/3)
+                        .setSyncAdapter(aware_account, authority)
+                        .setExtras(new Bundle()).build();
+                ContentResolver.requestSync(request);
+
+                String location_authority = Locations_Provider.getAuthority(this);
+                ContentResolver.setIsSyncable(aware_account, location_authority, 1);
+                ContentResolver.setSyncAutomatically(aware_account, location_authority, true);
+                SyncRequest request_local = new SyncRequest.Builder()
+                        .syncPeriodic(frequency, frequency/3)
+                        .setSyncAdapter(aware_account, location_authority)
+                        .setExtras(new Bundle()).build();
+                ContentResolver.requestSync(request_local);
             }
 
             Aware.startAWARE(this);
@@ -248,7 +253,7 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
     public void onDestroy() {
         super.onDestroy();
 
-        if (Aware.isStudy(this) && Aware.isSyncEnabled(this, Provider.getAuthority(this))) {
+        if (Aware.isSyncEnabled(this, Provider.getAuthority(this))) {
             ContentResolver.setSyncAutomatically(Aware.getAWAREAccount(this), Provider.getAuthority(this), false);
             ContentResolver.removePeriodicSync(
                     Aware.getAWAREAccount(this),

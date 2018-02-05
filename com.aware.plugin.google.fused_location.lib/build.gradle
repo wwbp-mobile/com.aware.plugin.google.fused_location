@@ -5,13 +5,12 @@ android {
     buildToolsVersion build_tools
 
     defaultConfig {
-//        applicationId "com.aware.plugin.google.fused_location"
         minSdkVersion minimum_sdk
         targetSdkVersion target_sdk
         versionCode version_code
         versionName version_readable
 
-        resValue "string", "provider_google_fused", applicationId + ".provider.geofences"
+        resValue "string", "provider_google_fused", "com.aware.plugin.google.fused_location.provider.geofences"
     }
 
     signingConfigs {
