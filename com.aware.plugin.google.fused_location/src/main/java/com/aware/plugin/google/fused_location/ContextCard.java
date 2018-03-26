@@ -24,6 +24,7 @@ import com.aware.utils.IContextCard;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 public class ContextCard implements IContextCard {
 
@@ -103,7 +104,7 @@ public class ContextCard implements IContextCard {
             if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
                 try {
                     String geo_text = "";
-                    Geocoder geo = new Geocoder(context);
+                    Geocoder geo = new Geocoder(context, Locale.getDefault());
                     List<Address> addressList = geo.getFromLocation(lat, lon, 1);
                     for (int i = 0; i < addressList.size(); i++) {
                         Address address1 = addressList.get(i);

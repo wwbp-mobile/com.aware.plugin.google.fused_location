@@ -2,12 +2,14 @@
 package com.aware.plugin.google.fused_location;
 
 import android.Manifest;
+import android.accounts.Account;
 import android.app.PendingIntent;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SyncRequest;
 import android.database.Cursor;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -36,11 +38,6 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
     public static final String ACTION_AWARE_LOCATIONS = "ACTION_AWARE_LOCATIONS";
     public static final String EXTRA_DATA = "data";
 
-    /**
-     * This plugin's package name
-     */
-    private final String PACKAGE_NAME = "com.aware.plugin.google.fused_location";
-
     private static GoogleApiClient mLocationClient;
     private final static LocationRequest mLocationRequest = new LocationRequest();
     private static PendingIntent pIntent;
@@ -55,11 +52,9 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
     public void onCreate() {
         super.onCreate();
 
-        TAG = "AWARE::Google Fused Location";
+        AUTHORITY = Provider.getAuthority(this);
 
-        DATABASE_TABLES = Locations_Provider.DATABASE_TABLES;
-        TABLES_FIELDS = Locations_Provider.TABLES_FIELDS;
-        CONTEXT_URIS = new Uri[]{Locations_Data.CONTENT_URI};
+        TAG = "AWARE::Google Fused Location";
 
         CONTEXT_PRODUCER = new ContextProducer() {
             @Override
@@ -132,6 +127,29 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
                 mLocationClient.connect();
 
             checkGeofences();
+
+            if (Aware.isStudy(this)) {
+                Account aware_account = Aware.getAWAREAccount(getApplicationContext());
+                String authority = Provider.getAuthority(getApplicationContext());
+                long frequency = Long.parseLong(Aware.getSetting(this, Aware_Preferences.FREQUENCY_WEBSERVICE)) * 60;
+
+                ContentResolver.setIsSyncable(aware_account, authority, 1);
+                ContentResolver.setSyncAutomatically(aware_account, authority, true);
+                SyncRequest request = new SyncRequest.Builder()
+                        .syncPeriodic(frequency, frequency / 3)
+                        .setSyncAdapter(aware_account, authority)
+                        .setExtras(new Bundle()).build();
+                ContentResolver.requestSync(request);
+
+                String location_authority = Locations_Provider.getAuthority(this);
+                ContentResolver.setIsSyncable(aware_account, location_authority, 1);
+                ContentResolver.setSyncAutomatically(aware_account, location_authority, true);
+                SyncRequest request_local = new SyncRequest.Builder()
+                        .syncPeriodic(frequency, frequency / 3)
+                        .setSyncAdapter(aware_account, location_authority)
+                        .setExtras(new Bundle()).build();
+                ContentResolver.requestSync(request_local);
+            }
 
             Aware.startAWARE(this);
         }
@@ -234,6 +252,21 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        ContentResolver.setSyncAutomatically(Aware.getAWAREAccount(this), Provider.getAuthority(this), false);
+        ContentResolver.removePeriodicSync(
+                Aware.getAWAREAccount(this),
+                Provider.getAuthority(this),
+                Bundle.EMPTY
+        );
+
+        ContentResolver.setSyncAutomatically(Aware.getAWAREAccount(this), Locations_Provider.getAuthority(this), false);
+        ContentResolver.removePeriodicSync(
+                Aware.getAWAREAccount(this),
+                Locations_Provider.getAuthority(this),
+                Bundle.EMPTY
+        );
+
         Aware.setSetting(this, Settings.STATUS_GOOGLE_FUSED_LOCATION, false);
 
         if (mLocationClient != null && mLocationClient.isConnected()) {

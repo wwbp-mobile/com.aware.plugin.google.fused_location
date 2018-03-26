@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">AWARE: Google Fused Location</string>
+    <string name="plugin_google_fused_location">Plugin: Google Fused Location</string>
 </resources>

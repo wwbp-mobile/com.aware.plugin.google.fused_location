@@ -4,6 +4,7 @@ import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -92,9 +93,6 @@ public class Provider extends ContentProvider {
     }
 
     private static UriMatcher sUriMatcher;
-    private static DatabaseHelper databaseHelper;
-
-
     private static HashMap<String, String> geoHash, geoDataHash;
 
     private static final int GEO_DIR = 1;
@@ -110,6 +108,15 @@ public class Provider extends ContentProvider {
             dbHelper = new DatabaseHelper(getContext(), DATABASE_NAME, null, DATABASE_VERSION, DATABASE_TABLES, TABLES_FIELDS);
         if (database == null)
             database = dbHelper.getWritableDatabase();
+    }
+
+    /**
+     * Returns the provider authority that is dynamic
+     * @return
+     */
+    public static String getAuthority(Context context) {
+        AUTHORITY = context.getPackageName() + ".provider.geofences";
+        return AUTHORITY;
     }
 
     @Override
@@ -207,7 +214,7 @@ public class Provider extends ContentProvider {
                 long geo_id = database.insertWithOnConflict(DATABASE_TABLES[0], Geofences.DEVICE_ID, values, SQLiteDatabase.CONFLICT_IGNORE);
                 if (geo_id > 0) {
                     Uri dataUri = ContentUris.withAppendedId(Geofences.CONTENT_URI, geo_id);
-                    getContext().getContentResolver().notifyChange(dataUri, null);
+                    getContext().getContentResolver().notifyChange(dataUri, null, false);
                     database.setTransactionSuccessful();
                     database.endTransaction();
                     return dataUri;
@@ -218,7 +225,7 @@ public class Provider extends ContentProvider {
                 long geo_data_id = database.insertWithOnConflict(DATABASE_TABLES[1], Geofences_Data.DEVICE_ID, values, SQLiteDatabase.CONFLICT_IGNORE);
                 if (geo_data_id > 0) {
                     Uri dataUri = ContentUris.withAppendedId(Geofences_Data.CONTENT_URI, geo_data_id);
-                    getContext().getContentResolver().notifyChange(dataUri, null);
+                    getContext().getContentResolver().notifyChange(dataUri, null, false);
                     database.setTransactionSuccessful();
                     database.endTransaction();
                     return dataUri;
@@ -253,7 +260,7 @@ public class Provider extends ContentProvider {
         database.setTransactionSuccessful();
         database.endTransaction();
 
-        getContext().getContentResolver().notifyChange(uri, null);
+        getContext().getContentResolver().notifyChange(uri, null, false);
         return count;
     }
 
@@ -279,7 +286,7 @@ public class Provider extends ContentProvider {
         database.setTransactionSuccessful();
         database.endTransaction();
 
-        getContext().getContentResolver().notifyChange(uri, null);
+        getContext().getContentResolver().notifyChange(uri, null, false);
         return count;
     }
 }
