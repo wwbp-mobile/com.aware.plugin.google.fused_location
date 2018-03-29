@@ -106,6 +106,11 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
 
             DEBUG = Aware.getSetting(this, Aware_Preferences.DEBUG_FLAG).equals("true");
 
+            //to create the database so that fused can store fused location's data
+            Aware.setSetting(this, Aware_Preferences.STATUS_LOCATION_NETWORK, true);
+            Aware.setSetting(this, Aware_Preferences.FREQUENCY_LOCATION_NETWORK, 300);
+            Aware.startLocations(this);
+
             Aware.setSetting(this, Settings.STATUS_GOOGLE_FUSED_LOCATION, true);
 
             if (Aware.getSetting(this, Settings.FREQUENCY_GOOGLE_FUSED_LOCATION).length() == 0)
@@ -268,6 +273,9 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
         );
 
         Aware.setSetting(this, Settings.STATUS_GOOGLE_FUSED_LOCATION, false);
+
+        Aware.setSetting(this, Aware_Preferences.STATUS_LOCATION_NETWORK, false);
+        Aware.stopLocations(this);
 
         if (mLocationClient != null && mLocationClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mLocationClient, pIntent);
