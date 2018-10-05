@@ -155,8 +155,6 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
                         .setExtras(new Bundle()).build();
                 ContentResolver.requestSync(request_local);
             }
-
-            Aware.startAWARE(this);
         }
         return START_STICKY;
     }
@@ -283,8 +281,6 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
         }
 
         if (geofences != null) stopService(geofences);
-
-        Aware.stopAWARE(this);
     }
 
     private boolean is_google_services_available() {
