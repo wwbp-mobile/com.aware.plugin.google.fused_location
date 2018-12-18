@@ -41,7 +41,7 @@ public class ContextCard implements IContextCard {
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        View card = inflater.inflate(R.layout.card, null);
+        View card = inflater.inflate(R.layout.card_fused, null);
 
         final TextView address = (TextView) card.findViewById(R.id.address);
         final TextView last_update = (TextView) card.findViewById(R.id.last_updated);
