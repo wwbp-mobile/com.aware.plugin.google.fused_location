@@ -2,11 +2,9 @@ package com.aware.plugin.google.fused_location;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.location.Location;
-import android.support.annotation.Nullable;
-
+import androidx.annotation.Nullable;
 import com.aware.Aware;
 import com.aware.Aware_Preferences;
 
