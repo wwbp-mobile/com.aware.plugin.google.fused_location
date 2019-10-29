@@ -43,10 +43,4 @@ android {
     }
 }
 
-dependencies {
-    implementation "com.google.android.gms:play-services-location:$google_libs"
-    implementation "com.google.android.gms:play-services-maps:16.1.0"
-    implementation "com.android.support:appcompat-v7:$support_libs"
-    implementation "com.android.support:design:$support_libs"
-    api project(':aware-core')
-}
+apply from: '../dependencies.gradle'
