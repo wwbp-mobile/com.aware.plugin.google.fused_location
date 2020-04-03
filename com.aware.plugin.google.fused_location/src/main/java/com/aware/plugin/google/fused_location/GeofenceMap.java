@@ -62,7 +62,7 @@ public class GeofenceMap extends FragmentActivity implements OnMapReadyCallback 
 
         radius = (SeekBar) findViewById(R.id.location_radius);
         if (loadedLabel.length() > 0) {
-            radius.setProgress(GeofenceUtils.getLabelLocationRadius(this, loadedLabel));
+            radius.setProgress((int) GeofenceUtils.getLabelLocationRadius(this, loadedLabel));
         }
         radius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
