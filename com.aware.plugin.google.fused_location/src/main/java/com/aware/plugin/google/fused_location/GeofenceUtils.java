@@ -70,11 +70,11 @@ public class GeofenceUtils {
      * @param label
      * @return
      */
-    public static int getLabelLocationRadius(Context context, String label) {
-        int radius = 1;
+    public static double getLabelLocationRadius(Context context, String label) {
+        double radius = 0;
         Cursor labels = getLabels(context, label);
         if (labels != null && labels.moveToFirst()) {
-            radius = labels.getInt(labels.getColumnIndex(Provider.Geofences.GEO_RADIUS));
+            radius = labels.getDouble(labels.getColumnIndex(Provider.Geofences.GEO_RADIUS));
         }
         if (labels != null && ! labels.isClosed()) labels.close();
         return radius;

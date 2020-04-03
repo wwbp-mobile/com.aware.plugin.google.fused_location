@@ -188,7 +188,7 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
                 geofenceLocation.setLongitude(geofences.getDouble(geofences.getColumnIndex(Provider.Geofences.GEO_LONG)));
 
                 //Current location is within this geofence
-                if (GeofenceUtils.getDistance(currentLocation, geofenceLocation) <= 0.05) { //50 meters (0.05 km)
+                if (GeofenceUtils.getDistance(currentLocation, geofenceLocation) <= GeofenceUtils.getLabelLocationRadius(getApplicationContext(),geofences.getString(geofences.getColumnIndex(Provider.Geofences.GEO_LABEL)))) {
                     //First time in this geofence
                     if (lastGeofence == null) {
 
@@ -227,9 +227,9 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
                 }
             } while (geofences.moveToNext());
 
-            if (lastGeofence != null && GeofenceUtils.getDistance(currentLocation, lastGeofence) > 0.05) { //exited last geofence
+            if (lastGeofence != null && GeofenceUtils.getDistance(currentLocation, lastGeofence) > GeofenceUtils.getLabelLocationRadius(this, GeofenceUtils.getLabel(this, lastGeofence))) { //exited last geofence
                 String label = GeofenceUtils.getLabel(this, lastGeofence);
-                long radius = GeofenceUtils.getLabelLocationRadius(this, GeofenceUtils.getLabel(this, lastGeofence));
+                double radius = GeofenceUtils.getLabelLocationRadius(this, GeofenceUtils.getLabel(this, lastGeofence));
 
                 ContentValues exited = new ContentValues();
                 exited.put(Provider.Geofences_Data.TIMESTAMP, System.currentTimeMillis());
