@@ -77,8 +77,8 @@ public class Plugin extends Aware_Plugin implements GoogleApiClient.ConnectionCa
         };
         contextProducer = CONTEXT_PRODUCER;
 
-        REQUIRED_PERMISSIONS.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-        REQUIRED_PERMISSIONS.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        //REQUIRED_PERMISSIONS.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+        //REQUIRED_PERMISSIONS.add(Manifest.permission.ACCESS_FINE_LOCATION);
 
         if (!is_google_services_available()) {
             if (DEBUG)
